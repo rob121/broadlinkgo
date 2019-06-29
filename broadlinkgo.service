@@ -1,0 +1,14 @@
+[Unit]
+Description=Broadlink device server
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=simple 
+PIDFile=/run/broadlink.pid
+ExecStart=/usr/local/bin/broadlinkgo           
+ExecStop=/bin/kill -s QUIT $MAINPID
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
