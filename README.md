@@ -3,7 +3,7 @@ Broadlink golang http server
 
 ## Overview
 
-This uses the 	"github.com/kwkoo/broadlinkrm" library
+
 
 ## Getting Started
 
@@ -56,4 +56,6 @@ GET /macro/tv_power/tv_volup:5/tv_source/delay/delay/tv_source_hdmi1
 
 Add a 2 second delay to the macro
 
+# Credit
 
+This builds upon the work of a few other projects most notably https://github.com/kwkoo/golang_broadlink_rm
