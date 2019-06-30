@@ -44,6 +44,10 @@ This will package up everything into a binary called "cmd", just rename to broad
 
 This page gives overall status and ability to manage learned commands
 
+## Adding Devices
+
+Add the Broadlink devices to your network per the manufacturer instructions, once the broadlinkgo software is started it will find them on the network and make them available in the web interface. 
+
 ### Learning
 
 Learning is super simple, just go to /learn via the home page and you'll get prompted for what to do. 
