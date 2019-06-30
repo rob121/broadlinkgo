@@ -102,6 +102,32 @@ There is also a magic "delay" command (1s) that will put in a delay for devices 
 GET /macro/tv_power/tv_volup:5/tv_source/delay/delay/tv_source_hdmi1
 ```
 
+Add a 2 second delay in the macro
+
+## App Status
+
+```
+GET /status
+```
+
+Returns json for devices and commands that are configured
+
+## Sending a command to a specific device
+
+You can send to a specific device by using the mac enumerated in the web page under devices
+
+```
+GET /device/{MAC}/cmd/....
+GET /device/{MAC}/macro/....
+```
+
+For example, send tv_on to device 8f:47:4E:I9
+
+```
+GET /device/8f:47:4E:I9/cmd/tv_on
+```
+
+
 ## Removing a command 
 
 ```
@@ -115,7 +141,11 @@ POST /remove/vizio_volup
 ```
 
 
-Add a 2 second delay to the macro
+## Sending command to a specifc device
+
+Using the mac address listed in devices on the web portal you can send the above commands to a specific device
+
+
 
 # Credit
 
