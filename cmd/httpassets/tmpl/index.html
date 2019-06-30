@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/assets/img/favicons/favicon.ico">
 
-    <title>Sticky Footer Navbar Template for Bootstrap</title>
+    <title>Broadlink Control</title>
 
 
     <!-- Bootstrap core CSS -->
@@ -16,6 +16,7 @@
 
     <!-- Custom styles for this template -->
     <link href="/assets/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link href="/assets/css/open-iconic-bootstrap.css" rel="stylesheet">
   </head>
 
   <body>
@@ -23,7 +24,7 @@
     <header>
       <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">Broadlink Control</a>
+        <a class="navbar-brand" href="/">Broadlink Control</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -44,9 +45,24 @@
 
     <!-- Begin page content -->
     <main role="main" class="container">
-      <h1 class="mt-5">Welcome</h1>
-   
-      <p>There are {{.DevicesCT}} devices online </p>
+	   <div style='display:none' class="alert alert-success">
+		   <a href="#" class="close" data-hide="alert" aria-label="close" title="close">×</a>
+		  <span id="message"> </span>
+		</div> 
+      <h2 class="mt-5">Application Status: <span id='device_ct' >{{.DevicesCT}}</span> devices online</h2>
+
+
+	     <form>
+		     <div id="form-group">
+			     <label>Send Command to:</label>
+		     <select id="active_device"> 
+			     <option value="">All Devices</option>
+		     </select>
+		     </div>
+	     </form>
+      
+      <p id="dev"> </p>
+ 
       <p id="cmds"> </p>
     </main>
 
@@ -69,35 +85,148 @@
 	
 	
 	$(function(){
+		
+	  $("[data-hide]").on("click", function(){
+        $("." + $(this).attr("data-hide")).hide();
+      
+      });	
 	
 	 $(document).on("click","[data-url]",function(e){
 		 
 		 e.preventDefault();
 		 
-		 $.get(this.href,function(resp){
+		  typ = $(this).attr("data-method");
+		  
+		  console.log(this.href);
+		  
+		  if(this.href.includes("/remove")){
+			  
+			  if(!confirm("Are you sure you want to remove this learned code?")){
+				  
+				  return;
+			  }
+			  
+		  }
+		  
+		  //send to specific device if necessary
+		  if(this.href.includes("/cmd")){ 
+			  
+			 dev_val = $("#active_device").val();
 			 
-			 alert(resp.message);
-			 
-		 });
+			 if(dev_val!=""){
+				 
+				this.href = this.href.replace("/cmd/","/device/"+dev_val+"/cmd/");
+				console.log(this.href);
+			 }
+			  
+		  }
+		  
+		  $.ajax({
+			  url:this.href, 
+			  cache: false,
+			  type: (typ=="post" ? "post" : "get"),
+			  success: function(resp){
+   
+  			   $(".alert").fadeIn(function(){
+  			   	$("#message").html(resp.message);
+  			   });
+  			   getStatus();
+
+  		  }});
+  		  
+  		  
+		
 		 
 	 });
 	 
-	 $.get("/status",function(resp){
+	 getStatus();
+	 
+	 setInterval(function(){
+		 getStatus();
+	},5000);
+		
+	});
 	
-		 ht="<tr><th>Commands</td><td></td></tr>"
+	function getStatus(){
+		
+		 $.get("/status",function(resp){
+	
+
+		 
+		 
+		 ht="<tr><th>Devices</td></tr>";
+		 
+		 
+		 
+
+		 d = Object.keys(resp.payload.devices).length;
+		 
+		
+		 
+		 
+		 if(2>1){
+	
+		 
+		 for (var key in resp.payload.devices){
+			 
+			  kk = resp.payload.devices[key];
+			 
+			  opt = "<option value='"+kk+"' >"+kk+"</option>";
+
+			  len = $('#active_device option[value="' + kk + '"]').length;
+			  
+			  if(len<1){
+				  
+				  $("#active_device").append(opt);
+			  }
+		 }
+	
+		 
+		 }
+		 
+		 for (var key in resp.payload.devices){ 
+			
+			 
+			 
+			// console.log(resp.payload.commands[key]);
+			 
+			 ht+="<tr><td>"+resp.payload.devices[key]+"</td></tr>"
+						 
+			 
+			 
+			 
+		 }
+		 
+
+		 
+		 $("#device_ct").html(d);
+		 
+		
+		 
+		 $("#dev").html("<table class='table'>"+ht+"</table>");
+		 
+		 
+		 
+		 ht="<tr><th width='60%'>Commands</td>    <th></th> <th></th></tr>"
 		 for (var key in resp.payload.commands){ 
 			 
 			// console.log(resp.payload.commands[key]);
 			 
-			 ht+="<tr><td>"+resp.payload.commands[key]+"</td><td><a data-url='true' href='/cmd/"+resp.payload.commands[key]+"' class='btn btn-primary' role='button'  >Go</a></td></tr>"
+			 ht+="<tr><td>"+resp.payload.commands[key]+"</td>";
+
+			 ht+="<td>";
+			 ht+="<a data-url='true' href='/cmd/"+resp.payload.commands[key]+"' class='btn btn-success' role='button'  ><span class='oi oi-play-circle' title='icon name' aria-hidden='true'></span> Execute</a></td>";
+			 ht+="<td><a data-url='true' data-method='post' href='/remove/"+resp.payload.commands[key]+"' class='btn btn-danger' role='button'  ><span class='oi oi-circle-x' title='icon name' aria-hidden='true'></span> Remove</a></td>";
+			 ht+="</tr>";
 			 
 		 }
 		 
 		 $("#cmds").html("<table class='table'>"+ht+"</table>");
 		 
+		 
 	 },"json");	
 		
-	});
+	}
 	
 	</script>
   </body>

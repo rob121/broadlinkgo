@@ -350,7 +350,7 @@ func deviceHandler(w http.ResponseWriter, r *http.Request) {
     
     if(len(parts)<2){
 	    
-	    fmt.Fprintln(w,"Must provide a device")
+	    //fmt.Fprintln(w,"Must provide a device")
 	    
     }
     
@@ -362,14 +362,14 @@ func deviceHandler(w http.ResponseWriter, r *http.Request) {
 	
     if _, ok := ids[device]; ok {
     //do something here
-      fmt.Fprintln(w,"Device Exists")
+    //  fmt.Fprintln(w,"Device Exists")
       //update path set a from value 
       
-      fmt.Fprintln(w,r.URL.Path)
+     // fmt.Fprintln(w,r.URL.Path)
       
       r.URL.Path = strings.Replace(r.URL.Path,"/device/"+device,"",-1)
       
-      fmt.Fprintln(w,r.URL.Path)
+     // fmt.Fprintln(w,r.URL.Path)
       
       r.ParseForm()
       
@@ -387,12 +387,55 @@ func deviceHandler(w http.ResponseWriter, r *http.Request) {
     
     }else{
 	    
-	    fmt.Fprintln(w,"Device Does Not Exist")
+	   // fmt.Fprintln(w,"Device Does Not Exist")
 	    
     }
 	
 }
 
+func removeHandler(w http.ResponseWriter, r *http.Request) { 
+	
+	path := r.URL.Path
+	
+	path = strings.Replace(path," ","_",-1)
+	
+	path = strings.ToLower(path)
+	
+	parts := strings.Split(path,"/")
+	
+	cmd := ""
+	
+	if(r.Method!="POST"){
+		 respond(w,500,"Invalid Request - must POST","")   
+		 return
+		
+	}
+	
+	if(parts[2]==""){ 
+		 
+		 respond(w,500,"Invalid Request","")   
+		 return
+		    
+	}
+	
+	cmd = parts[2];
+
+    file := cmdpath+"commands/cmd_"+cmd+".txt"
+	
+	var err = os.Remove(file)
+	
+	if err != nil {		
+		respond(w,500,"Command Not Removed "+err.Error(),"")
+        return
+ 	}
+	  
+	
+	
+	respond(w,200,"Command Removed","")
+	
+
+	
+}
 
 func statusHandler(w http.ResponseWriter, r *http.Request) {
 	
@@ -411,9 +454,18 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 		    return nil
 	    }
 	    
+	
+	    
 	    path = strings.Replace(path,root+"/cmd_","",-1)
+	    path = strings.Replace(path,"commands/cmd_","",-1)
+	    
+	 
 	    
 	    parts := strings.Split(path,".")
+	    
+	    if(parts[0]=="commands/"){
+		    return nil
+	    }
 	    
         files = append(files, parts[0])
         return nil
@@ -482,21 +534,39 @@ type JsonResp struct{
 
 
 func main() {
-	broadlink = broadlinkgo.NewBroadlink()
-	err := broadlink.Discover()
-	if err != nil {
-		log.Fatal(err)
-	}
 	
-	log.Println("Found "+strconv.Itoa(broadlink.Count())+" devices")
 	
-	if(broadlink.Count()<1){
+	ticker := time.NewTicker(5 * time.Second)
 	
-	log.Println("No devices found")	
-	 	
-	}
+	go func() {
+        for  range ticker.C {
 	
+			broadlink = broadlinkgo.NewBroadlink()
+			err := broadlink.Discover()
+			if err != nil {
+				log.Fatal(err)
+			}
+			
+			log.Println("Found "+strconv.Itoa(broadlink.Count())+" devices")
+			
+			if(broadlink.Count()<1){
+			
+			log.Println("No devices found")	
 
+	 	
+			}else{
+				
+			log.Println("Devices Found, updating check interval")
+			ticker.Stop()
+			ticker = time.NewTicker(300 * time.Second)//look every 5
+				
+			}
+			
+	 	}		
+	
+	}()
+	
+    
 	
 	
 	//port := 8081
@@ -505,12 +575,23 @@ func main() {
 	flag.IntVar(&port, "port", 8000, "HTTP listener port")
     flag.StringVar(&cmdpath, "cmdpath","/etc/broadlinkgo/", "Path to commands folder")
 	flag.Parse()
+	
+	
+	//create cmdpath if not exist
+	
+	if _, err := os.Stat(cmdpath+"commands"); os.IsNotExist(err) {
+              err = os.MkdirAll(cmdpath+"commands", 0755)
+              if err != nil {
+                      panic(err)
+              }
+      }
 
 	log.Print("Listening on port ", port)
 	
 	box := rice.MustFindBox("httpassets")
     assetsFileServer := http.StripPrefix("/assets/", http.FileServer(box.HTTPBox()))
     http.Handle("/assets/", assetsFileServer)
+    http.HandleFunc("/remove/", removeHandler)
 	http.HandleFunc("/device/", deviceHandler)
     http.HandleFunc("/status/", statusHandler)
     http.HandleFunc("/cmd/", cmdHandler)
