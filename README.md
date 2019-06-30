@@ -11,13 +11,30 @@ This api allows access to the Broadlink family of devices for IR/RM control via 
 Start the program 
 
 ```
-go run maing.go --port=8000 --cmdpath=./ 
+broadlinkgo --port=8000 --cmdpath=./ 
 ```
 
 Cmdpath is the location where a "commands" folder exists (it will be created if not present) this is where learned codes will be placed.
 
+For ease a systemd service file is included, the default command dir is "/etc/broadlinkgo" and the systemd unit file is looking for the binary in /usr/local/bin
+
 
 The program will look for devices on the network and then once found start the server listening on the port. It will continually scan for devices so if more are added later they will be auto added without needing to re-start
+
+## Building from source
+
+The program uses rice (https://github.com/GeertJohan/go.rice) to embed html
+
+Once you have the rice tool build:
+
+```
+cd cmd
+rice embed-go
+go build
+```
+
+This will package up everything into a binary called "cmd", just rename to broadlinkgo. I've included a few popular build types binaries in releases.
+
 
 ### Home Page
 
