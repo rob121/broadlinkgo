@@ -356,7 +356,7 @@ func deviceHandler(w http.ResponseWriter, r *http.Request) {
     
     device := parts[2]
     
-    fmt.Fprintln(w,device)
+   // fmt.Fprintln(w,device)
     
     ids := broadlink.DeviceIds()
 	
