@@ -39,24 +39,21 @@ func (b Broadlink) Count() int {
 	return len(b.devices)
 }
 
-
-
 func (b Broadlink) DeviceTypes() map[int]string {
-	
-      var kd = make(map[int]string)
-	  for _, d := range knownDevices { 
-		  
-		  if(d.supported==true){
-		  
-		  kd[d.deviceType]=d.name
-		  
-		  }
-		  
-	  }
-	  
-	  return kd
-}
 
+	var kd = make(map[int]string)
+	for _, d := range knownDevices {
+
+		if d.supported == true {
+
+			kd[d.deviceType] = d.name
+
+		}
+
+	}
+
+	return kd
+}
 
 // Discover will populate the Broadlink struct with a slice of Devices.
 func (b *Broadlink) Discover() error {
@@ -138,21 +135,14 @@ func (b *Broadlink) GetPowerState(id string) (bool, error) {
 	return d.getPowerState()
 }
 
-
 func (b *Broadlink) AddManualDevice(ip string, macs string, deviceType int) error {
-	
-	
 
-	
-	mac,err := net.ParseMAC(macs)
-	
-	
-	if(err!=nil){
-		
+	mac, err := net.ParseMAC(macs)
+
+	if err != nil {
+
 	}
-	
 
-	
 	devChar := isKnownDevice(deviceType)
 	if !devChar.supported {
 		return fmt.Errorf("device type %v (0x%04x) is not supported", deviceType, deviceType)
@@ -170,9 +160,14 @@ func (b *Broadlink) AddManualDevice(ip string, macs string, deviceType int) erro
 		log.Printf("A device with MAC %v already exists - skipping manual add", hw)
 	}
 	b.devices = append(b.devices, d)
-	b.lookup[d.remoteAddr] = d
+	
 	if len(hw) > 0 {
 		b.lookup[strings.ToLower(hw)] = d
+	}else{
+		
+	b.lookup[d.remoteAddr] = d
+
+	
 	}
 
 	return nil
@@ -187,18 +182,17 @@ func (b Broadlink) getDevice(id string) *device {
 }
 
 func (b Broadlink) DeviceIds() map[string]string {
-	
+
 	var lkp = make(map[string]string)
-	
-	for k,_ := range b.lookup {
-		
-		
-		lkp[k]=k
-		
+
+	for k, _ := range b.lookup {
+
+		lkp[k] = k
+
 	}
-	
+
 	return lkp
-	
+
 }
 
 func (b *Broadlink) readPacket(conn net.PacketConn) {
@@ -234,8 +228,6 @@ func (b *Broadlink) readPacket(conn net.PacketConn) {
 		b.addDevice(remote, mac, deviceType)
 	}
 }
-
-
 
 func (b *Broadlink) addDevice(remote net.Addr, mac net.HardwareAddr, deviceType int) {
 	remoteAddr := remote.String()

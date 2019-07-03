@@ -77,9 +77,14 @@
 		     </select>
 		     </div>
 	     </form>
+	     
+	    {{if ne .Mode "auto"}} 
+	     
 	    <a id="add_device_btn" data-toggle="collapse" href="#add_device" role="button"  class='btn btn-info' ><span class='oi oi-play-circle' title='icon name' aria-hidden='true'></span> Add Device Manually</a>
 	    <br>
 	    <br>
+	    
+	    {{end}}
 	    
 	     <form action="/manualdevice/" method="POST" id="add_device" enctype="multipart/form-data" class="collapse" >
 		     <div class="form-group">
