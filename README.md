@@ -4,7 +4,7 @@ Broadlink golang http server api
 
 ## Overview
 
-This api allows access to the Broadlink family of devices for IR/RM control via an http api.
+This api allows access to the Broadlink family of devices for IR/RM control via an http api.  There is a web portal for basic management as well.
 
 
 ![Image of Home](broadlink_home.jpg?raw=true)
@@ -20,7 +20,7 @@ broadlinkgo --port=8000 --cmdpath=./
 
 Cmdpath is the location where a "commands" folder exists (it will be created if not present) this is where learned codes will be placed.
 
-For ease a systemd service file is included, the default command dir is "/etc/broadlinkgo" and the systemd unit file is looking for the binary in /usr/local/bin
+For linux/systemd systems a service file is included, the default command dir is "/etc/broadlinkgo" and the systemd unit file is looking for the binary in /usr/local/bin
 
 
 The program will look for devices on the network and then once found start the server listening on the port. It will continually scan for devices so if more are added later they will be auto added without needing to re-start
@@ -34,25 +34,35 @@ Once you have the rice tool build:
 ```
 cd cmd
 rice embed-go
-go build
+go build -o broadlinkgo
 ```
 
-This will package up everything into a binary called "cmd", just rename to broadlinkgo. I've included a few popular build types binaries in releases.
+This will package up everything into a binary "broadlinkgo". I've included a few popular build types binaries in releases.
 
 
-### Home Page
+## Web Interface
 
-This page gives overall status and ability to manage learned commands
+This page gives overall status and ability to manage learned commands, the web interface is available on the host running the software at the port you started with (default port is 8000)
 
-## Adding Devices
+### Adding Devices
 
-Add the Broadlink devices to your network per the manufacturer instructions, once the broadlinkgo software is started it will find them on the network and make them available in the web interface. 
+Add the Broadlink devices to your network per the manufacturer instructions, once the broadlinkgo software is started it will find them on the network using a discovery process and make them available in the web interface. 
+
+Sometimes a network has issues doing self discover, there is a manual mode for that. Restart the software with the manual mode flag and you can add a device using the ip and mac address directly
+
+```
+broadlinkgo --port=8000 --cmdpath=./ --mode=manual
+```
+
+A button will appear on the interface allowing you to add a device manually skipping the discovery step. Special care should be taken to make sure you pick the correct device type to connect to when using this mode.
 
 ### Learning
 
 Learning is super simple, just go to /learn via the home page and you'll get prompted for what to do. 
 
 ![Image of Home](broadlink_learn.jpg?raw=true)
+
+
 
 # Api
 
