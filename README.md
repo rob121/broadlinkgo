@@ -42,7 +42,7 @@ This will package up everything into a binary called "cmd", just rename to broad
 
 ### Home Page
 
-This page gives overall status and ability to manage learned commands
+This page gives overall status and ability to manage learned commands. You can connect to it by visiting the ip and port of the machine the software is running on ie http:/127.0.0.1:8000 (default)
 
 ## Adding Devices
 
