@@ -193,6 +193,7 @@ func cmdHandler(w http.ResponseWriter, r *http.Request) {
 func learnHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Path
+	
 	w.Header().Set("Content-type", "text/html")
 
 	path = strings.Replace(path, " ", "_", -1)
@@ -201,16 +202,52 @@ func learnHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	frame := ""
+	
+	
+    kd := broadlink.DeviceIds()
 
-	if r.FormValue("device") != "" {
+	device_sel := "<select class='form-control' name='device' >"
 
-		dev := r.FormValue("device")
+	//kk := ""
 
-		frame = `<h4>Learning device [` + dev + `]</h4>
+	for k, v := range kd {
 
-		<iframe src='/learnchild/` + dev + `' width='100%' height='500px' ></iframe>`
+		//kk = strconv.Itoa(k)
+
+		device_sel += "<option value='" + k + "' >" + v + "</option>"
 
 	}
+
+	device_sel += "</select>"
+
+	
+
+	if r.FormValue("cmd") != "" {
+
+		cmd := r.FormValue("cmd")
+		
+		dev := r.FormValue("device")
+		
+		if(dev!=""){
+			
+		frame = `<h4>Learning device [` + cmd + `]</h4>
+
+		<iframe src='/device/`+dev+`/learnchild/` + cmd + `' width='100%' height='500px' ></iframe>`
+					
+		}else{
+			
+		frame = `<h4>Learning device [` + cmd + `]</h4>
+
+		<iframe src='/learnchild/` + cmd + `' width='100%' height='500px' ></iframe>`
+			
+		}
+
+
+
+	}
+	
+	
+	
 
 	templateBox, err := rice.FindBox("httpassets")
 	if err != nil {
@@ -226,7 +263,9 @@ func learnHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tmplMessage.Execute(w, map[string]string{"Frame": frame})
+	tmplMessage.Execute(w, map[string]string{"Frame": frame,"DeviceList": device_sel})
+	
+
 
 }
 
@@ -236,6 +275,9 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 
 	path = strings.Replace(path, " ", "_", -1)
 	path = strings.ToLower(path)
+	
+	
+	device := r.Form.Get("device")
 
 	w.Header().Set("Content-type", "text/html")
 	fmt.Fprintln(w, "<style> body{margin:0px;padding:30px;background-color:#000;color:#FFF;}</style>")
@@ -262,7 +304,7 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("no flush")
 	}
 
-	data, err := broadlink.Learn("")
+	data, err := broadlink.Learn(device)
 
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -395,6 +437,10 @@ func deviceHandler(w http.ResponseWriter, r *http.Request) {
 
 			macroHandler(w, r)
 
+		}else if strings.Contains(path, "/learnchild/") {
+			
+			learnChildHandler(w, r)
+			
 		}
 
 	} else {
