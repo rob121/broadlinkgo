@@ -53,6 +53,8 @@ type unencryptedRequest struct {
 	payload []byte
 }
 
+
+
 func newDevice(remoteAddr string, mac net.HardwareAddr, timeout, deviceType int) (*device, error) {
 	rand.Seed(time.Now().Unix())
 	d := &device{

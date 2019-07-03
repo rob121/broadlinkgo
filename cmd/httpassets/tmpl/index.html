@@ -17,7 +17,20 @@
     <!-- Custom styles for this template -->
     <link href="/assets/css/sticky-footer-navbar.css" rel="stylesheet">
     <link href="/assets/css/open-iconic-bootstrap.css" rel="stylesheet">
+    <style>
+	    
+	    .alert {
+		    position: fixed;
+		    top: 50px;
+		    left: 0;
+		    width: 100%;
+		    z-index:1000;
+		}
+	    
+	    </style>
+  
   </head>
+  
 
   <body>
 
@@ -57,12 +70,33 @@
 
 
 	     <form>
-		     <div id="form-group">
-			     <label>Send Command to:</label>
-		     <select id="active_device"> 
+		     <div class="form-group">
+			 <label>Send Command to:</label>
+		     <select class="form-control" id="active_device"> 
 			     <option value="">All Devices</option>
 		     </select>
 		     </div>
+	     </form>
+	    <a id="add_device_btn" data-toggle="collapse" href="#add_device" role="button"  class='btn btn-info' ><span class='oi oi-play-circle' title='icon name' aria-hidden='true'></span> Add Device Manually</a>
+	    <br>
+	    <br>
+	    
+	     <form action="/manualdevice/" method="POST" id="add_device" enctype="multipart/form-data" class="collapse" >
+		     <div class="form-group">
+			 <label>Send Command to:</label>
+		    {{.DeviceList}}	
+		    </div>
+		       <div class="form-group">
+		       <label>Ip Address:</label>
+		        <input class="form-control" name="ip" placeholder="192.168.1.200" type='text'  />
+		       </div>
+		       <div class="form-group">
+		       <label>MAC Address:</label>
+		       <input  class="form-control" name="mac" placeholder="C4:E5:66:77:A9:80" type='text'  />
+		       </div>
+		       <div class="form-group">
+		       <input   type="submit" name="save" value="Save"/>
+		       </div>
 	     </form>
       
       <p id="dev"> </p>
@@ -89,6 +123,63 @@
 	
 	
 	$(function(){
+		
+	 $("[data-toggle]").click(function(){
+		
+		vis =  $("#add_device").is(":visible"); 
+		
+		if(vis){
+	
+	
+	     $(" > span",this).addClass("oi-play-circle");
+		 $(" > span",this).removeClass("oi-arrow-circle-bottom");
+			
+		}else{
+	 
+	 	
+		 $(" > span",this).removeClass("oi-play-circle");
+		 $(" > span",this).addClass("oi-arrow-circle-bottom");
+			
+		}
+		 
+	 });
+		
+	  $(document).on("submit","#add_device",function(e){
+	      
+	    $("input[type='submit']",this).prop("disabled",true)  
+	      
+	    
+		var form = $(this);
+        var url = form.attr('action');
+        
+     
+
+        $.ajax({
+           url: url,
+           type: "POST",
+           dataType: "json",
+           data: form.serialize(), // serializes the form's elements.			  success: function(resp){
+           success: function(resp){
+	           
+  			   $(".alert").fadeIn(function(){
+  			   	$("#message").html(resp.message);
+  			   });
+  			   
+  			   $("input[type='submit']",form).prop("disabled",false)  
+  			   
+  			   if(resp.code=="200"){
+	  			   
+	  			   $("#add_device_btn").trigger("click");
+	  			   
+  			   }
+  			   
+  			   getStatus();
+
+  		  }});
+		  
+	    e.preventDefault();
+			  
+	  });	
 		
 	  $("[data-hide]").on("click", function(){
         $("." + $(this).attr("data-hide")).hide();

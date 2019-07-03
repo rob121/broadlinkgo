@@ -41,6 +41,22 @@ func (b Broadlink) Count() int {
 
 
 
+func (b Broadlink) DeviceTypes() map[int]string {
+	
+      var kd = make(map[int]string)
+	  for _, d := range knownDevices { 
+		  
+		  if(d.supported==true){
+		  
+		  kd[d.deviceType]=d.name
+		  
+		  }
+		  
+	  }
+	  
+	  return kd
+}
+
 
 // Discover will populate the Broadlink struct with a slice of Devices.
 func (b *Broadlink) Discover() error {
@@ -122,13 +138,26 @@ func (b *Broadlink) GetPowerState(id string) (bool, error) {
 	return d.getPowerState()
 }
 
-// AddManualDevice adds a device manually - bypassing the authentication phase.
-func (b *Broadlink) AddManualDevice(ip, mac, key, id string, deviceType int) error {
+
+func (b *Broadlink) AddManualDevice(ip string, macs string, deviceType int) error {
+	
+	
+
+	
+	mac,err := net.ParseMAC(macs)
+	
+	
+	if(err!=nil){
+		
+	}
+	
+
+	
 	devChar := isKnownDevice(deviceType)
 	if !devChar.supported {
 		return fmt.Errorf("device type %v (0x%04x) is not supported", deviceType, deviceType)
 	}
-	d, err := newManualDevice(ip, mac, key, id, b.timeout, deviceType)
+	d, err := newDevice(ip, mac, b.timeout, deviceType)
 	if err != nil {
 		return err
 	}
@@ -205,6 +234,8 @@ func (b *Broadlink) readPacket(conn net.PacketConn) {
 		b.addDevice(remote, mac, deviceType)
 	}
 }
+
+
 
 func (b *Broadlink) addDevice(remote net.Addr, mac net.HardwareAddr, deviceType int) {
 	remoteAddr := remote.String()

@@ -42,7 +42,24 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tmplMessage.Execute(w, map[string]string{"DevicesCT": strconv.Itoa(ct)})
+	
+	kd := broadlink.DeviceTypes()
+	
+	device_sel := "<select class='form-control' name='deviceType' >"
+	
+	kk := ""
+	
+	for k,v := range kd{
+		
+		kk = strconv.Itoa(k)
+		
+		device_sel += "<option value='"+kk+"' >"+v+"</option>"
+		
+	}
+
+	device_sel += "</select>"
+	
+	tmplMessage.Execute(w, map[string]string{"DevicesCT": strconv.Itoa(ct),"DeviceList": device_sel})
 
 }
 
@@ -337,6 +354,49 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func manualDeviceHandler(w http.ResponseWriter, r *http.Request) { 
+	
+		
+	//path := r.URL.Path
+	
+	
+	w.Header().Set("Content-type", "application/json")
+	
+	r.ParseForm()
+	
+	if(r.Method!="POST"){
+		 respond(w,500,"Invalid Request - must POST","")   
+		 return
+		
+	}
+	
+	
+	ip := r.FormValue("ip")
+	
+	mac := r.FormValue("mac")
+	
+	if(ip=="" || mac==""){
+		
+		respond(w,500,"Ip, Mac Required","")   
+		return
+	}
+	
+	deviceType,_ := strconv.Atoi(r.Form.Get("deviceType"))
+	
+	
+	state := broadlink.AddManualDevice(ip, mac, deviceType)
+	
+	if(state!=nil){
+		
+	 respond(w,500,"Add Error "+state.Error(),"")	
+	 return;
+		
+	}
+	
+	respond(w,200,"Device Added Succesfully","") 
+	
+}
+
 func deviceHandler(w http.ResponseWriter, r *http.Request) { 
 	
 		
@@ -593,6 +653,7 @@ func main() {
     http.Handle("/assets/", assetsFileServer)
     http.HandleFunc("/remove/", removeHandler)
 	http.HandleFunc("/device/", deviceHandler)
+	http.HandleFunc("/manualdevice/", manualDeviceHandler)
     http.HandleFunc("/status/", statusHandler)
     http.HandleFunc("/cmd/", cmdHandler)
     http.HandleFunc("/macro/", macroHandler)
