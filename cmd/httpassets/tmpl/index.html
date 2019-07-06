@@ -125,7 +125,13 @@
     <script src="/assets/js/bootstrap.min.js"></script>
     
     <script>
-	
+	    
+	{{if ne .Mode "auto"}}     
+	var mode = "manual"
+	{{end}}
+	{{if ne .Mode "manual"}}     
+	var mode = "auto"
+	{{end}}
 	
 	$(function(){
 		
@@ -271,9 +277,9 @@
 			 
 			  kk = resp.payload.devices[key];
 			 
-			  opt = "<option value='"+kk+"' >"+kk+"</option>";
+			  opt = "<option value='"+key+"' >"+key+" ("+kk[0]+")</option>";
 
-			  len = $('#active_device option[value="' + kk + '"]').length;
+			  len = $('#active_device option[value="' + key + '"]').length;
 			  
 			  if(len<1){
 				  
@@ -290,7 +296,16 @@
 			 
 			// console.log(resp.payload.commands[key]);
 			 
-			 ht+="<tr><td>"+resp.payload.devices[key]+"</td></tr>"
+			 ht+="<tr>";
+			 ht+="<td>"+key+" ("+resp.payload.devices[key][0]+")</td>";
+			 
+			 if(mode=="manual"){
+				 
+		     ht+="<td><a data-url='true' data-method='post' href='/removedevice/"+key+"' class='btn btn-danger' role='button'  ><span class='oi oi-circle-x' title='icon name' aria-hidden='true'></span> Remove</a></td>";
+				 
+			 }
+			 
+			 ht+="</tr>";
 						 
 			 
 			 

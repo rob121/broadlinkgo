@@ -181,13 +181,15 @@ func (b Broadlink) getDevice(id string) *device {
 	return d
 }
 
-func (b Broadlink) DeviceIds() map[string]string {
+func (b Broadlink) DeviceIds() map[string][]string {
 
-	var lkp = make(map[string]string)
+	var lkp = make(map[string][]string)
 
-	for k, _ := range b.lookup {
+	for k, v := range b.lookup {
+		
+		typ := strconv.Itoa(v.deviceType)
 
-		lkp[k] = k
+		lkp[k] = []string{v.remoteAddr,typ}
 
 	}
 
@@ -260,6 +262,14 @@ func (b *Broadlink) addDevice(remote net.Addr, mac net.HardwareAddr, deviceType 
 	//log.Println(mac.String())
 	// one device lookup is fine
 	b.lookup[strings.ToLower(mac.String())] = dev
+}
+
+func (b *Broadlink) RemoveDevice(key string){
+	
+	
+	delete(b.lookup,key)
+	
+	
 }
 
 func sendBroadcastPacket(conn net.PacketConn) error {

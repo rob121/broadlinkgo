@@ -15,6 +15,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+	"encoding/gob"
+    "bytes"
 )
 
 var broadlink broadlinkgo.Broadlink
@@ -214,7 +216,7 @@ func learnHandler(w http.ResponseWriter, r *http.Request) {
 
 		//kk = strconv.Itoa(k)
 
-		device_sel += "<option value='" + k + "' >" + v + "</option>"
+		device_sel += "<option value='" + k + "' >" + k+" ("+v[0]+")</option>"
 
 	}
 
@@ -245,8 +247,6 @@ func learnHandler(w http.ResponseWriter, r *http.Request) {
 
 
 	}
-	
-	
 	
 
 	templateBox, err := rice.FindBox("httpassets")
@@ -387,10 +387,100 @@ func manualDeviceHandler(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
+	
+	//save this device
+	
+
+	saveDevices(ip,mac,deviceType)
+
 
 	respond(w, 200, "Device Added Succesfully", "")
 
 }
+
+func removeDevice(mac string){
+	
+	dev := getDeviceSaved();
+	
+	delete(dev,mac);
+	
+	
+	broadlink.RemoveDevice(mac)
+	
+	file, err := os.Create(cmdpath+"devices.gob")
+   
+    if err == nil { 
+       
+       
+    }
+        
+    encoder := gob.NewEncoder(file)
+     
+    if err := encoder.Encode(dev); err != nil {
+		
+	}
+	
+	file.Close()
+	
+}
+
+func getDeviceSaved() map[string][]string{
+	
+		// Create a file for IO
+	byt, err := ioutil.ReadFile(cmdpath+"devices.gob")
+	
+	encodeFile := bytes.NewReader(byt)
+	
+	if err != nil {
+	
+	}
+
+
+	
+	decoder := gob.NewDecoder(encodeFile)
+	
+		// Place to decode into
+	out := make(map[string][]string)
+
+	// Decode -- We need to pass a pointer otherwise accounts2 isn't modified
+	decoder.Decode(&out)
+	
+
+	
+	return out
+	
+}
+
+func saveDevices(ip string,mac string,devicetype int){
+	
+	
+	dev := getDeviceSaved();
+	 
+	//read, merge, save
+	sdev := strconv.Itoa(devicetype)
+	
+	dev[mac]=[]string{ip,sdev}
+
+	 
+	file, err := os.Create(cmdpath+"devices.gob")
+   
+    if err == nil { 
+       
+       
+    }
+        
+    encoder := gob.NewEncoder(file)
+     
+    if err := encoder.Encode(dev); err != nil {
+		
+	}
+	
+	file.Close()
+	
+	 
+}
+
+
 
 func deviceHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -450,6 +540,40 @@ func deviceHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func removeDeviceHandler(w http.ResponseWriter, r *http.Request) {
+
+	path := r.URL.Path
+
+	path = strings.Replace(path, " ", "_", -1)
+
+	path = strings.ToLower(path)
+
+	parts := strings.Split(path, "/")
+
+	cmd := ""
+
+	if r.Method != "POST" {
+		respond(w, 500, "Invalid Request - must POST", "")
+		return
+
+	}
+
+	if parts[2] == "" {
+
+		respond(w, 500, "Invalid Request", "")
+		return
+
+	}
+
+	cmd = parts[2]
+
+	removeDevice(cmd)
+	
+	respond(w, 200, "Command Removed", "")
+
+}
+
 
 func removeHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -611,6 +735,30 @@ func main() {
 		
 		broadlink = broadlinkgo.NewBroadlink()
 		
+		
+		dev := getDeviceSaved()
+		
+		if(len(dev)>0){
+			
+			for k,v := range dev {
+				
+				devicetype := v[1]
+				
+				ip := v[0]
+				
+				mac := k
+				
+				deviceType, _ := strconv.Atoi(devicetype)
+
+	            broadlink.AddManualDevice(ip, mac, deviceType)
+	            
+	            
+	            
+	        }
+			
+			
+		}
+		
     }
 
 
@@ -631,6 +779,7 @@ func main() {
 	assetsFileServer := http.StripPrefix("/assets/", http.FileServer(box.HTTPBox()))
 	http.Handle("/assets/", assetsFileServer)
 	http.HandleFunc("/remove/", removeHandler)
+	http.HandleFunc("/removedevice/", removeDeviceHandler)
 	http.HandleFunc("/device/", deviceHandler)
 	http.HandleFunc("/manualdevice/", manualDeviceHandler)
 	http.HandleFunc("/status/", statusHandler)
