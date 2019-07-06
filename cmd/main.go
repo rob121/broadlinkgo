@@ -631,6 +631,7 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 
 		path = strings.Replace(path, root+"/cmd_", "", -1)
 		path = strings.Replace(path, "commands/cmd_", "", -1)
+		path = strings.Replace(path, "commands\\cmd_", "", -1) //windows
 
 		parts := strings.Split(path, ".")
 
