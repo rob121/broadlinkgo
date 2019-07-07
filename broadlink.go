@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"sort"
 )
 
 const defaultTimeout = 5 // seconds
@@ -181,6 +182,29 @@ func (b Broadlink) getDevice(id string) *device {
 	return d
 }
 
+func SortMapStringSlice(m map[string][]string) map[string][]string {
+	
+out := make(map[string][]string)	
+
+keys := make([]string, 0, len(m))
+
+for k := range m {
+        keys = append(keys, k)
+}
+
+sort.Strings(keys)
+
+for _, k := range keys {
+        
+        
+        out[k]=m[k]
+}
+
+	
+return out
+	
+}
+
 func (b Broadlink) DeviceIds() map[string][]string {
 
 	var lkp = make(map[string][]string)
@@ -192,6 +216,8 @@ func (b Broadlink) DeviceIds() map[string][]string {
 		lkp[k] = []string{v.remoteAddr,typ}
 
 	}
+	
+	lkp = SortMapStringSlice(lkp)
 
 	return lkp
 

@@ -17,6 +17,7 @@ import (
 	"time"
 	"encoding/gob"
     "bytes"
+    "runtime"
 )
 
 var broadlink broadlinkgo.Broadlink
@@ -124,8 +125,11 @@ func executeCmd(cmd string, repeat int, device string) bool {
 	if repeat == 0 {
 		repeat = 1
 	}
+	
+	
+	fp := filepath.FromSlash(cmdpath + "commands/cmd_" + cmd + ".txt")
 
-	content, err := ioutil.ReadFile(cmdpath + "commands/cmd_" + cmd + ".txt")
+	content, err := ioutil.ReadFile(fp)
 
 	if err != nil {
 		log.Println(err)
@@ -320,20 +324,23 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 
 	//create a file with command
 
+    var fp = ""
 	if data != "" {
 
 		fn = parts[2]
+		
+		fp = filepath.FromSlash(cmdpath + "commands/cmd_" + fn + ".txt")
 
-		f, err := os.Create(cmdpath + "commands/cmd_" + fn + ".txt")
+		f, err := os.Create(fp)
 
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
 		l, err := f.WriteString(data)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			f.Close()
 			return
 		}
@@ -345,8 +352,17 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Code Detected!")
 	fmt.Fprintln(w, data)
-	fmt.Fprintln(w, "Code Saved!")
+	fmt.Fprintln(w, "Code Saved to "+fp)
+	
+	if(device!=""){
+		
+	fmt.Fprintln(w, "Use /device/"+device+"/cmd/"+fn+" to trigger the command")	
+		
+	}else{
+	
 	fmt.Fprintln(w, "Use /cmd/"+fn+" to trigger the command")
+	
+	}
 	fmt.Fprintln(w, "</pre>")
 
 	return
@@ -407,7 +423,9 @@ func removeDevice(mac string){
 	
 	broadlink.RemoveDevice(mac)
 	
-	file, err := os.Create(cmdpath+"devices.gob")
+	fp := filepath.FromSlash(cmdpath+"devices.gob")
+	
+	file, err := os.Create(fp)
    
     if err == nil { 
        
@@ -427,7 +445,10 @@ func removeDevice(mac string){
 func getDeviceSaved() map[string][]string{
 	
 		// Create a file for IO
-	byt, err := ioutil.ReadFile(cmdpath+"devices.gob")
+		
+	fp := filepath.FromSlash(cmdpath+"devices.gob")	
+	
+	byt, err := ioutil.ReadFile(fp)
 	
 	encodeFile := bytes.NewReader(byt)
 	
@@ -461,8 +482,9 @@ func saveDevices(ip string,mac string,devicetype int){
 	
 	dev[mac]=[]string{ip,sdev}
 
+	fp := filepath.FromSlash(cmdpath+"devices.gob")	 
 	 
-	file, err := os.Create(cmdpath+"devices.gob")
+	file, err := os.Create(fp)
    
     if err == nil { 
        
@@ -603,8 +625,10 @@ func removeHandler(w http.ResponseWriter, r *http.Request) {
 	cmd = parts[2]
 
 	file := cmdpath + "commands/cmd_" + cmd + ".txt"
+	
+	fp := filepath.FromSlash(file)	
 
-	var err = os.Remove(file)
+	var err = os.Remove(fp)
 
 	if err != nil {
 		respond(w, 500, "Command Not Removed "+err.Error(), "")
@@ -622,16 +646,18 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 	var files []string
 
 	root := cmdpath + "commands"
+	
+	fp := filepath.FromSlash(root)	
 
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(fp, func(path string, info os.FileInfo, err error) error {
 
-		if path == root {
+		if path == fp {
 			return nil
 		}
 
-		path = strings.Replace(path, root+"/cmd_", "", -1)
-		path = strings.Replace(path, "commands/cmd_", "", -1)
-		path = strings.Replace(path, "commands\\cmd_", "", -1) //windows
+		path = strings.Replace(path, filepath.FromSlash(root+"/cmd_"), "", -1)
+		path = strings.Replace(path, filepath.FromSlash("commands/cmd_"), "", -1)
+	
 
 		parts := strings.Split(path, ".")
 
@@ -694,11 +720,46 @@ type JsonResp struct {
 
 func main() {
 	
+	var cpath=""
+	
+	if ( runtime.GOOS == "windows") {
+		
+		cpath = os.Getenv("APPDATA")+"\\broadlinkgo\\"
+	
+		
+	}else if(runtime.GOOS == "darwin"){
+		
+		cpath = os.Getenv("HOME")+"/broadlinkgo/"
+
+    }else{
+	    		
+		cpath = "/etc/broadlinkgo/"
+	}
+	
+	if(cpath!=""){}
 	
     flag.IntVar(&port, "port", 8000, "HTTP listener port")
-	flag.StringVar(&cmdpath, "cmdpath", "/etc/broadlinkgo/", "Path to commands folder")
+	flag.StringVar(&cmdpath, "cmdpath", cpath, "Path to commands folder")
 	flag.StringVar(&mode, "mode", "auto", "Auto or Manual")
 	flag.Parse()
+	
+	log.Println("Saving commands to "+cmdpath)
+	
+	//bunch of windows path fixing stuff
+	
+	cmdpath = strings.Replace(cmdpath,"\\","/",-1)//we do this because we use filepath everywhere and need the same file path direction
+	cmdpath = strings.Replace(cmdpath,"\"","",-1)
+	
+	slash := cmdpath[len(cmdpath)-1:]
+	
+	if(slash!="/"){
+		
+		cmdpath = cmdpath+"/"
+		
+	}
+	
+	
+	
 	
 	if(mode=="auto"){
 	
@@ -735,8 +796,7 @@ func main() {
 	}else{
 		
 		broadlink = broadlinkgo.NewBroadlink()
-		
-		
+	
 		dev := getDeviceSaved()
 		
 		if(len(dev)>0){
@@ -766,9 +826,11 @@ func main() {
 
 
 	//create cmdpath if not exist
+	
+	fp := filepath.FromSlash(cmdpath + "commands")
 
-	if _, err := os.Stat(cmdpath + "commands"); os.IsNotExist(err) {
-		err = os.MkdirAll(cmdpath+"commands", 0755)
+	if _, err := os.Stat(fp); os.IsNotExist(err) {
+		err = os.MkdirAll(fp, 0755)
 		if err != nil {
 			panic(err)
 		}
