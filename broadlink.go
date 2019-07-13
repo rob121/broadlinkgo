@@ -174,6 +174,21 @@ func (b *Broadlink) AddManualDevice(ip string, macs string, deviceType int) erro
 	return nil
 }
 
+func (b Broadlink) DeviceExists(id string) bool { 
+	
+	d := b.getDevice(id)
+	
+	if(d!=nil){
+		
+		return true
+		
+	}
+	
+	return false
+	
+	
+}
+
 func (b Broadlink) getDevice(id string) *device {
 	d, ok := b.lookup[strings.ToLower(id)]
 	if !ok {

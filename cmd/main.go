@@ -759,12 +759,9 @@ func main() {
 	}
 	
 	
-	
+	ticker := time.NewTicker(5 * time.Second)
 	
 	if(mode=="auto"){
-	
-
-	ticker := time.NewTicker(5 * time.Second)
 
 	go func() {
 		for range ticker.C {
@@ -803,6 +800,8 @@ func main() {
 			
 			for k,v := range dev {
 				
+		
+				
 				devicetype := v[1]
 				
 				ip := v[0]
@@ -813,13 +812,45 @@ func main() {
 
 	            broadlink.AddManualDevice(ip, mac, deviceType)
 	            
-	            
-	            
 	        }
-			
-			
+
 		}
 		
+        	go func() {
+	        	
+	        	//update the ticker for the manual. mode to look for every 5 minutes
+	        	ticker = time.NewTicker(300 * time.Second) //look every 5
+	        	
+				for range ticker.C {
+	
+					if broadlink.Count() < len(dev) {
+		
+						for k,v := range dev {
+							
+							if( broadlink.DeviceExists(k) ){
+								
+								continue
+							}
+							
+							fmt.Println("Trying to connect to "+k)
+				
+							devicetype := v[1]
+							
+							ip := v[0]
+							
+							mac := k
+							
+							deviceType, _ := strconv.Atoi(devicetype)
+			
+				            broadlink.AddManualDevice(ip, mac, deviceType)
+				            
+				        }						
+		
+					}
+		
+				}
+		
+			}()    
     }
 
 
