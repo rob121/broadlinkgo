@@ -1,23 +1,25 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/GeertJohan/go.rice"
-	"github.com/rob121/broadlinkgo"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"text/template"
 	"time"
-	"encoding/gob"
-    "bytes"
-    "runtime"
+
+	"github.com/GeertJohan/go.rice"
+
+	"github.com/2opremio/broadlinkgo"
 )
 
 var broadlink broadlinkgo.Broadlink
