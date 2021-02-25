@@ -26,6 +26,7 @@ type knownDevice struct {
 var knownDevices = []knownDevice{
 	knownDevice{deviceType: 0x2737, name: "Broadlink RM Mini", supported: true, ir: true, rf: false, power: false},
 	knownDevice{deviceType: 0x27c2, name: "Broadlink RM Mini 3", supported: true, ir: true, rf: false, power: false},
+	knownDevice{deviceType: 0x5f36, name: "Broadlink RM Mini 3 (RM4 update)", supported: true, ir: true, rf: true, power: false, requestHeader: []byte{0x04, 0x00}, codeSendingHeader: []byte{0xd0, 0x00}},
 	knownDevice{deviceType: 0x273d, name: "Broadlink RM Pro Phicom", supported: true, ir: true, rf: false, power: false},
 	knownDevice{deviceType: 0x2712, name: "Broadlink RM2", supported: true, ir: true, rf: false, power: false},
 	knownDevice{deviceType: 0x2783, name: "Broadlink RM2 Home Plus", supported: true, ir: true, rf: false, power: false},
