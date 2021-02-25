@@ -56,8 +56,8 @@ func (b Broadlink) DeviceTypes() map[int]string {
 	return kd
 }
 
-// Discover will populate the Broadlink struct with a slice of Devices.
-func (b *Broadlink) Discover() error {
+// Discover will populate the Broadlink struct with a device.
+func (b *Broadlink) DiscoverHost(host string) error {
 	conn, err := net.ListenPacket("udp4", "")
 	if err != nil {
 		return fmt.Errorf("could not bind UDP listener: %v", err)
@@ -65,13 +65,18 @@ func (b *Broadlink) Discover() error {
 	defer conn.Close()
 
 	log.Printf("Listening to address %v", conn.LocalAddr().String())
-	err = sendBroadcastPacket(conn)
+	err = sendHelloPacketToHost(conn, host)
 	if err != nil {
 		return fmt.Errorf("error sending broadcast packet: %v", err)
 	}
 	b.readPacket(conn)
 
 	return nil
+}
+
+// Discover will populate the Broadlink struct with a slice of Devices.
+func (b *Broadlink) Discover() error {
+	return b.DiscoverHost("255.255.255.255")
 }
 
 // Learn sends a learn command to the specified device. If id is an empty string it selects the first device.
@@ -313,7 +318,7 @@ func (b *Broadlink) RemoveDevice(key string){
 	
 }
 
-func sendBroadcastPacket(conn net.PacketConn) error {
+func sendHelloPacketToHost(conn net.PacketConn, host string) error {
 	ip, port, err := parseIPAndPort(conn.LocalAddr().String())
 	if err != nil {
 		return err
@@ -329,11 +334,15 @@ func sendBroadcastPacket(conn net.PacketConn) error {
 	checksum := calculateChecksum(packet[:])
 	copy(packet[0x20:], checksum[:])
 
-	return sendPacket(packet[:], conn, "255.255.255.255:80")
+	return sendPacket(packet[:], conn, fmt.Sprintf("%s:80", host))
+}
+
+func sendBroadcastPacket(conn net.PacketConn) error {
+	return sendHelloPacketToHost(conn, "255.255.255.255")
 }
 
 func sendPacket(p []byte, conn net.PacketConn, dest string) error {
-	destAddr, err := net.ResolveUDPAddr("udp", "255.255.255.255:80")
+	destAddr, err := net.ResolveUDPAddr("udp", dest)
 	if err != nil {
 		return fmt.Errorf("could not resolve broadcast address: %v", err)
 	}
