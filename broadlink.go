@@ -64,7 +64,8 @@ func (b *Broadlink) DiscoverHost(host string) error {
 	}
 	defer conn.Close()
 
-	log.Printf("Listening to address %v", conn.LocalAddr().String())
+	// Stop printing shit, this is a library
+	//log.Printf("Listening to address %v", conn.LocalAddr().String())
 	err = sendHelloPacketToHost(conn, host)
 	if err != nil {
 		return fmt.Errorf("error sending broadcast packet: %v", err)
@@ -76,7 +77,7 @@ func (b *Broadlink) DiscoverHost(host string) error {
 
 // Discover will populate the Broadlink struct with a slice of Devices.
 func (b *Broadlink) Discover() error {
-	return b.DiscoverHost("255.255.255.255")
+	return b.DiscoverHost("10.10.20.5")
 }
 
 // Learn sends a learn command to the specified device. If id is an empty string it selects the first device.
@@ -258,7 +259,8 @@ func (b *Broadlink) readPacket(conn net.PacketConn) {
 			}
 			log.Printf("Error reading UDP packet: %v", err)
 		}
-		log.Printf("Received packet of length %v bytes from %v", plen, remote.String())
+		// Stop printing shit, this is a library
+		// log.Printf("Received packet of length %v bytes from %v", plen, remote.String())
 		if plen < 0x40 {
 			log.Print("Ignoring packet because it is too short")
 			return
@@ -297,7 +299,8 @@ func (b *Broadlink) addDevice(remote net.Addr, mac net.HardwareAddr, deviceType 
 		log.Printf("We already know about %v, MAC %v - skipping", remoteAddr, mac.String())
 		return
 	}
-	log.Printf("Found a supported %v, device type %d (0x%04x) at address %v, MAC %v", devChar.name, deviceType, deviceType, remoteAddr, mac.String())
+	// Stop printing shit, this is a library
+	// log.Printf("Found a supported %v, device type %d (0x%04x) at address %v, MAC %v", devChar.name, deviceType, deviceType, remoteAddr, mac.String())
 	dev, err := newDevice(remoteAddr, mac, b.timeout, devChar)
 	if err != nil {
 		log.Printf("Error creating new device: %v", err)

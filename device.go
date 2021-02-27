@@ -303,7 +303,8 @@ func (d *device) readPacket() (Response, error) {
 	if command == 0xe9 {
 		copy(d.key, payload[0x04:0x14])
 		copy(d.id, payload[:0x04])
-		log.Printf("Device %v ready - updating to a new key %v and new id %v", d.mac.String(), hex.EncodeToString(d.key), hex.EncodeToString(d.id))
+		// Stop printing shit, this is a library
+		// log.Printf("Device %v ready - updating to a new key %v and new id %v", d.mac.String(), hex.EncodeToString(d.key), hex.EncodeToString(d.id))
 		processedPayload.Type = AuthOK
 		return processedPayload, nil
 	}
