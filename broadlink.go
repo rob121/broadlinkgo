@@ -148,7 +148,7 @@ func (b *Broadlink) AddManualDevice(ip string, macs string, deviceType int) erro
 	if !devChar.supported {
 		return fmt.Errorf("device type %v (0x%04x) is not supported", deviceType, deviceType)
 	}
-	d, err := newDevice(ip, mac, b.timeout, deviceType)
+	d, err := newDevice(ip, mac, b.timeout, devChar)
 	if err != nil {
 		return err
 	}
@@ -293,7 +293,7 @@ func (b *Broadlink) addDevice(remote net.Addr, mac net.HardwareAddr, deviceType 
 		return
 	}
 	log.Printf("Found a supported %v, device type %d (0x%04x) at address %v, MAC %v", devChar.name, deviceType, deviceType, remoteAddr, mac.String())
-	dev, err := newDevice(remoteAddr, mac, b.timeout, deviceType)
+	dev, err := newDevice(remoteAddr, mac, b.timeout, devChar)
 	if err != nil {
 		log.Printf("Error creating new device: %v", err)
 		return
