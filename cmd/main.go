@@ -234,20 +234,21 @@ func learnHandler(w http.ResponseWriter, r *http.Request) {
 		
 		dev := r.FormValue("device")
 		
+		rf := r.FormValue("rf")
+		
+		src := ``
+
 		if(dev!=""){
-			
-		frame = `<h4>Learning device [` + cmd + `]</h4>
-
-		<iframe src='/device/`+dev+`/learnchild/` + cmd + `' width='100%' height='500px' ></iframe>`
-					
-		}else{
-			
-		frame = `<h4>Learning device [` + cmd + `]</h4>
-
-		<iframe src='/learnchild/` + cmd + `' width='100%' height='500px' ></iframe>`
-			
+			src = src + `/device/` + dev
 		}
 
+		src = src + `/learnchild/` + cmd
+
+		if(rf!=""){
+			src = src + `/rf/`
+		}
+
+		frame = `<h4>Learning device [` + cmd + `]</h4><iframe src='` + src + `' width='100%' height='500px' ></iframe>`
 
 
 	}
@@ -289,6 +290,7 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(path, "/")
 
+	// TODO: len(parts) < 3 is no longer a valid check, with the potential addition of /rf/ (could check "Is RF", without specifying a "Device Name/Action")
 	if len(parts) < 3 {
 
 		fmt.Fprintln(w, "Provide a button/device name")
@@ -297,7 +299,14 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	fmt.Fprintln(w, "Waiting for remote presses<blink>....</blink>")
+	rf := strings.Contains(path, "/rf/")
+
+	if (rf) {
+		fmt.Fprintln(w, "Waiting for RF remote long press<blink>....</blink>")
+	}else{
+		fmt.Fprintln(w, "Waiting for remote presses<blink>....</blink>")
+	}
+
 	fmt.Fprintln(w, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>")
 
 	fn := ""
@@ -308,7 +317,14 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("no flush")
 	}
 
-	data, err := broadlink.Learn(device)
+	var data string
+	var err error
+
+	if (rf) {
+		data, err = broadlink.LearnRF(device)
+	}else{
+		data, err = broadlink.Learn(device)
+	}
 
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
