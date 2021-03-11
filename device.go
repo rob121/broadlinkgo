@@ -37,15 +37,17 @@ type Response struct {
 }
 
 type device struct {
-	conn       *net.PacketConn
-	remoteAddr string
-	timeout    int
-	deviceType int
-	mac        net.HardwareAddr
-	count      int
-	key        []byte
-	iv         []byte
-	id         []byte
+	conn              *net.PacketConn
+	remoteAddr        string
+	timeout           int
+	deviceType        int
+	mac               net.HardwareAddr
+	count             int
+	key               []byte
+	iv                []byte
+	id                []byte
+	requestHeader     []byte
+	codeSendingHeader []byte
 }
 
 type unencryptedRequest struct {
@@ -53,17 +55,19 @@ type unencryptedRequest struct {
 	payload []byte
 }
 
-func newDevice(remoteAddr string, mac net.HardwareAddr, timeout, deviceType int) (*device, error) {
+func newDevice(remoteAddr string, mac net.HardwareAddr, timeout int, devChar deviceCharacteristics) (*device, error) {
 	rand.Seed(time.Now().Unix())
 	d := &device{
-		remoteAddr: remoteAddr,
-		timeout:    timeout,
-		deviceType: deviceType,
-		mac:        mac,
-		count:      rand.Intn(0xffff),
-		key:        []byte{0x09, 0x76, 0x28, 0x34, 0x3f, 0xe9, 0x9e, 0x23, 0x76, 0x5c, 0x15, 0x13, 0xac, 0xcf, 0x8b, 0x02},
-		iv:         []byte{0x56, 0x2e, 0x17, 0x99, 0x6d, 0x09, 0x3d, 0x28, 0xdd, 0xb3, 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58},
-		id:         []byte{0, 0, 0, 0},
+		remoteAddr:        remoteAddr,
+		timeout:           timeout,
+		deviceType:        devChar.deviceType,
+		mac:               mac,
+		count:             rand.Intn(0xffff),
+		key:               []byte{0x09, 0x76, 0x28, 0x34, 0x3f, 0xe9, 0x9e, 0x23, 0x76, 0x5c, 0x15, 0x13, 0xac, 0xcf, 0x8b, 0x02},
+		iv:                []byte{0x56, 0x2e, 0x17, 0x99, 0x6d, 0x09, 0x3d, 0x28, 0xdd, 0xb3, 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58},
+		id:                []byte{0, 0, 0, 0},
+		requestHeader:     devChar.requestHeader,
+		codeSendingHeader: devChar.codeSendingHeader,
 	}
 
 	resp, err := d.serverRequest(authenticatePayload())
@@ -295,16 +299,18 @@ func (d *device) readPacket() (Response, error) {
 	mode.CryptBlocks(payload, encryptedPayload)
 
 	command := buf[0x26]
+	header := d.requestHeader
 	if command == 0xe9 {
 		copy(d.key, payload[0x04:0x14])
 		copy(d.id, payload[:0x04])
-		log.Printf("Device %v ready - updating to a new key %v and new id %v", d.mac.String(), hex.EncodeToString(d.key), hex.EncodeToString(d.id))
+		// Stop printing shit, this is a library
+		// log.Printf("Device %v ready - updating to a new key %v and new id %v", d.mac.String(), hex.EncodeToString(d.key), hex.EncodeToString(d.id))
 		processedPayload.Type = AuthOK
 		return processedPayload, nil
 	}
 
 	if command == 0xee || command == 0xef {
-		param := payload[0]
+		param := payload[len(header)]
 		errorCode := (int)(buf[0x22]) | ((int)(buf[0x23]) << 8)
 		if errorCode != 0 {
 			processedPayload.Type = DeviceError
@@ -313,23 +319,23 @@ func (d *device) readPacket() (Response, error) {
 		switch param {
 		case 1:
 			processedPayload.Type = Temperature
-			processedPayload.Data = []byte{(payload[0x4]*10 + payload[0x5]) / 10}
+			processedPayload.Data = []byte{(payload[len(header)+0x4]*10 + payload[len(header)+0x5]) / 10}
 		case 2:
 			processedPayload.Type = CommandOK
 		case 4:
 			processedPayload.Type = RawData
-			processedPayload.Data = make([]byte, len(payload)-4, len(payload)-4)
-			copy(processedPayload.Data, payload[4:])
+			processedPayload.Data = make([]byte, len(payload)-len(header)-4, len(payload)-len(header)-4)
+			copy(processedPayload.Data, payload[len(header)+4:])
 		case 26:
-			processedPayload.Data = make([]byte, len(payload)-4, len(payload)-4)
-			copy(processedPayload.Data, payload[4:])
-			if payload[0x4] == 1 {
+			processedPayload.Data = make([]byte, len(payload)-len(header)-4, len(payload)-len(header)-4)
+			copy(processedPayload.Data, payload[len(header)+4:])
+			if payload[len(header)+0x4] == 1 {
 				processedPayload.Type = RawRFData
 			}
 		case 27:
-			processedPayload.Data = make([]byte, len(payload)-4, len(payload)-4)
-			copy(processedPayload.Data, payload[4:])
-			if payload[0x4] == 1 {
+			processedPayload.Data = make([]byte, len(payload)-len(header)-4, len(payload)-len(header)-4)
+			copy(processedPayload.Data, payload[len(header)+4:])
+			if payload[len(header)+0x4] == 1 {
 				processedPayload.Type = RawRFData2
 			}
 		}
@@ -349,12 +355,14 @@ func (d *device) sendString(s string) error {
 }
 
 func (d *device) sendData(data []byte) error {
-	reqPayload := make([]byte, len(data)+4, len(data)+4)
-	reqPayload[0] = 0x02
-	reqPayload[1] = 0x00
-	reqPayload[2] = 0x00
-	reqPayload[3] = 0x00
-	copy(reqPayload[4:], data)
+	header := d.codeSendingHeader
+	reqPayload := make([]byte, len(header)+len(data)+4, len(header)+len(data)+4)
+	copy(reqPayload, header)
+	reqPayload[len(header)] = 0x02
+	reqPayload[len(header)+1] = 0x00
+	reqPayload[len(header)+2] = 0x00
+	reqPayload[len(header)+3] = 0x00
+	copy(reqPayload[len(header)+4:], data)
 	req := unencryptedRequest{
 		command: 0x6a,
 		payload: reqPayload,
@@ -375,7 +383,7 @@ func (d *device) sendData(data []byte) error {
 }
 
 func (d *device) checkData() (Response, error) {
-	resp, err := d.serverRequest(checkDataPayload())
+	resp, err := d.serverRequest(d.checkDataPayload())
 	if err != nil {
 		return resp, fmt.Errorf("error making CheckData request: %v", err)
 	}
@@ -384,7 +392,7 @@ func (d *device) checkData() (Response, error) {
 }
 
 func (d *device) checkRFData() (Response, error) {
-	resp, err := d.serverRequest(checkRFDataPayload())
+	resp, err := d.serverRequest(d.checkRFDataPayload())
 	if err != nil {
 		return resp, fmt.Errorf("error making CheckRFData request: %v", err)
 	}
@@ -393,7 +401,7 @@ func (d *device) checkRFData() (Response, error) {
 }
 
 func (d *device) checkRFData2() (Response, error) {
-	resp, err := d.serverRequest(checkRFData2Payload())
+	resp, err := d.serverRequest(d.checkRFData2Payload())
 	if err != nil {
 		return resp, fmt.Errorf("error making CheckRFData2 request: %v", err)
 	}
@@ -404,7 +412,7 @@ func (d *device) checkRFData2() (Response, error) {
 func (d *device) learn() (Response, error) {
 	deadline := time.Now().Add(learnTimeout * time.Second)
 	defer d.close()
-	_, err := d.serverRequest(enterLearningPayload())
+	_, err := d.serverRequest(d.enterLearningPayload())
 	if err != nil {
 		return Response{}, fmt.Errorf("error making learning request: %v", err)
 	}
@@ -436,7 +444,7 @@ func (d *device) learn() (Response, error) {
 func (d *device) learnRF() (Response, error) {
 	deadline := time.Now().Add(learnTimeout * time.Second)
 	defer d.close()
-	_, err := d.serverRequest(enterRFSweepPayload())
+	_, err := d.serverRequest(d.enterRFSweepPayload())
 	if err != nil {
 		return Response{}, fmt.Errorf("error making learning request: %v", err)
 	}
@@ -487,7 +495,7 @@ func (d *device) learnRF() (Response, error) {
 
 func (d *device) checkTemperature() (Response, error) {
 	defer d.close()
-	resp, err := d.serverRequest(checkTemperaturePayload())
+	resp, err := d.serverRequest(d.checkTemperaturePayload())
 	if err != nil {
 		return resp, fmt.Errorf("error making check temperature request: %v", err)
 	}
@@ -500,7 +508,7 @@ func (d *device) checkTemperature() (Response, error) {
 func (d *device) cancelLearn() {
 	//d.sendPacket(cancelLearnPayload())
 	//d.close()
-	d.serverRequest(cancelLearnPayload())
+	d.serverRequest(d.cancelLearnPayload())
 	d.close()
 }
 
@@ -514,7 +522,7 @@ func (d *device) setPowerState(data string) error {
 		return fmt.Errorf("set power state expects an argument of 0, 00, 1, or 01 - got %v instead", data)
 	}
 
-	resp, err := d.serverRequest(setPowerStatePayload(state))
+	resp, err := d.serverRequest(d.setPowerStatePayload(state))
 	d.close()
 
 	if err != nil {
@@ -531,7 +539,7 @@ func (d *device) setPowerState(data string) error {
 }
 
 func (d *device) getPowerState() (bool, error) {
-	resp, err := d.serverRequest(getPowerStatePayload())
+	resp, err := d.serverRequest(d.getPowerStatePayload())
 	d.close()
 
 	if err != nil {
@@ -590,66 +598,66 @@ func authenticatePayload() unencryptedRequest {
 	return req
 }
 
-func checkDataPayload() unencryptedRequest {
+func (d *device) checkDataPayload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(4),
+		payload: d.basicRequestPayload(0x04),
 	}
 }
 
-func enterLearningPayload() unencryptedRequest {
+func (d *device) enterLearningPayload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(3),
+		payload: d.basicRequestPayload(0x03),
 	}
 }
 
-func checkTemperaturePayload() unencryptedRequest {
+func (d *device) checkTemperaturePayload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(1),
+		payload: d.basicRequestPayload(0x01),
 	}
 }
 
-func cancelLearnPayload() unencryptedRequest {
+func (d *device) cancelLearnPayload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(0x1e),
+		payload: d.basicRequestPayload(0x1e),
 	}
 }
 
-func enterRFSweepPayload() unencryptedRequest {
+func (d *device) enterRFSweepPayload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(0x19),
+		payload: d.basicRequestPayload(0x19),
 	}
 }
 
-func checkRFDataPayload() unencryptedRequest {
+func (d *device) checkRFDataPayload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(0x1a),
+		payload: d.basicRequestPayload(0x1a),
 	}
 }
 
-func checkRFData2Payload() unencryptedRequest {
+func (d *device) checkRFData2Payload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(0x1b),
+		payload: d.basicRequestPayload(0x1b),
 	}
 }
 
 // Based on the following paragraph from https://blog.ipsumdomus.com/broadlink-smart-home-devices-complete-protocol-hack-bc0b4b397af1:
 // Command (16 bytes message id 0x6a payload) always has Get (byte 0x1) or Set
 // (byte 0x2) at byte 0 and state (On — 0x1 and Off — 0x0) at byte 4.
-func setPowerStatePayload(state bool) unencryptedRequest {
+func (d *device) setPowerStatePayload(state bool) unencryptedRequest {
 	var stateValue byte
 	if state {
 		stateValue = 0x01
 	} else {
 		stateValue = 0x00
 	}
-	p := basicRequestPayload(0x02)
+	p := d.basicRequestPayload(0x02)
 	p[4] = stateValue
 	return unencryptedRequest{
 		command: 0x6a,
@@ -657,15 +665,17 @@ func setPowerStatePayload(state bool) unencryptedRequest {
 	}
 }
 
-func getPowerStatePayload() unencryptedRequest {
+func (d *device) getPowerStatePayload() unencryptedRequest {
 	return unencryptedRequest{
 		command: 0x6a,
-		payload: basicRequestPayload(0x01),
+		payload: d.basicRequestPayload(0x01),
 	}
 }
 
-func basicRequestPayload(command byte) []byte {
+func (d *device) basicRequestPayload(command byte) []byte {
 	payload := make([]byte, 16, 16)
-	payload[0] = command
+	header := d.requestHeader
+	copy(payload, header)
+	payload[len(header)] = command
 	return payload
 }
