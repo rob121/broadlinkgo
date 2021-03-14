@@ -730,6 +730,34 @@ func respond(w http.ResponseWriter, code int, message string, payload interface{
 
 }
 
+func loadDevices(){
+
+
+	dev := getDeviceSaved()
+
+	if(len(dev)>0){
+
+		for k,v := range dev {
+
+
+
+			devicetype := v[1]
+
+			ip := v[0]
+
+			mac := k
+
+			deviceType, _ := strconv.Atoi(devicetype)
+
+			broadlink.AddManualDevice(ip, mac, deviceType)
+
+		}
+
+	}
+
+
+}
+
 type JsonResp struct {
 	Code    int         `json:"code"`
 	Payload interface{} `json:"payload"`
@@ -781,6 +809,8 @@ func main() {
 	
 	if(mode=="auto"){
 
+
+
 	go func() {
 		for range ticker.C {
 
@@ -811,28 +841,9 @@ func main() {
 	}else{
 		
 		broadlink = broadlinkgo.NewBroadlink()
-	
+
 		dev := getDeviceSaved()
-		
-		if(len(dev)>0){
-			
-			for k,v := range dev {
-				
-		
-				
-				devicetype := v[1]
-				
-				ip := v[0]
-				
-				mac := k
-				
-				deviceType, _ := strconv.Atoi(devicetype)
-
-	            broadlink.AddManualDevice(ip, mac, deviceType)
-	            
-	        }
-
-		}
+	    loadDevices()
 		
         	go func() {
 	        	
@@ -896,6 +907,39 @@ func main() {
 	http.HandleFunc("/manualdevice/", manualDeviceHandler)
 	http.HandleFunc("/status/", statusHandler)
 	http.HandleFunc("/cmd/", cmdHandler)
+	http.HandleFunc("/discover/",func(w http.ResponseWriter, r *http.Request) {
+
+
+
+		path := r.URL.Path
+		path = strings.Replace(path, " ", "_", -1)
+		path = strings.ToLower(path)
+
+		parts := strings.Split(path,"/")
+
+		if(len(parts)<2){
+
+			fmt.Fprintf(w,`{"ok": "false"}`)
+			return
+		}
+
+		log.Println(parts[2])
+
+		hst := parts[2]
+
+		err := broadlink.DiscoverHost(hst)
+
+		if(err==nil){
+
+			fmt.Fprintf(w,`{"ok": "true"}`)
+
+		}else{
+
+			fmt.Fprintf(w,`{"ok": "false"}`)
+
+		}
+
+	})
 	http.HandleFunc("/macro/", macroHandler)
 	http.HandleFunc("/learnchild/", learnChildHandler)
 	http.HandleFunc("/learn/", learnHandler)
