@@ -9,7 +9,17 @@ import (
 	"strings"
 	"time"
 	"sort"
+	"os"
 )
+
+var Logger *log.Logger
+
+
+
+func init() {
+	Logger = log.New(os.Stderr, "xxx: ", log.Ldate | log.Ltime | log.Lshortfile)
+}
+
 
 const defaultTimeout = 5 // seconds
 

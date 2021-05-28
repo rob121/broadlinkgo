@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const learnTimeout = 20 // seconds
+const learnTimeout = 30 // seconds
 const sendRetries = 3
 
 // ResponseType denotes the type of payload.
@@ -70,9 +70,12 @@ func newDevice(remoteAddr string, mac net.HardwareAddr, timeout int, devChar dev
 		codeSendingHeader: devChar.codeSendingHeader,
 	}
 
+	//Logger.Printf("%#v",d)
+
 	resp, err := d.serverRequest(authenticatePayload())
 	d.close()
 	if err != nil {
+		Logger.Printf("%#v",err)
 		return d, fmt.Errorf("error making authentication request: %v", err)
 	}
 	if resp.Type == DeviceError {
@@ -139,8 +142,12 @@ func (d *device) serverRequest(req unencryptedRequest) (Response, error) {
 		return resp, fmt.Errorf("could not setup UDP listener: %v", err)
 	}
 
+	//Logger.Printf("Request: %#v",req)
+
+
 	encryptedReq, err := d.encryptRequest(req)
 	if err != nil {
+		//Logger.Printf("%#v",err)
 		return resp, err
 	}
 
@@ -265,6 +272,8 @@ func (d device) send(packet []byte) error {
 		return fmt.Errorf("could not resolve device address %v: %v", d.remoteAddr, err)
 	}
 
+	//Logger.Printf("Send to %s:\n%#v",d.remoteAddr,packet)
+
 	_, err = (*d.conn).WriteTo(packet, destAddr)
 	if err != nil {
 		return fmt.Errorf("could not send packet: %v", err)
@@ -287,6 +296,7 @@ func (d *device) readPacket() (Response, error) {
 	if plen < 0x38+16 {
 		return processedPayload, fmt.Errorf("received a packet with a length of %v which is too short", plen)
 	}
+
 	encryptedPayload := make([]byte, plen-0x38, plen-0x38)
 	copy(encryptedPayload, buf[0x38:plen])
 
@@ -296,15 +306,25 @@ func (d *device) readPacket() (Response, error) {
 	}
 	payload := make([]byte, len(encryptedPayload), len(encryptedPayload))
 	mode := cipher.NewCBCDecrypter(block, d.iv)
+
+
+	if len(encryptedPayload)%16 != 0 {
+
+		Logger.Printf("%#v",encryptedPayload)
+		return processedPayload,errors.New("crypto/cipher: input not full blocks")
+	}
+
+
 	mode.CryptBlocks(payload, encryptedPayload)
 
 	command := buf[0x26]
+	Logger.Printf("Command: %#v",command)
 	header := d.requestHeader
 	if command == 0xe9 {
 		copy(d.key, payload[0x04:0x14])
 		copy(d.id, payload[:0x04])
-		// Stop printing shit, this is a library
-		// log.Printf("Device %v ready - updating to a new key %v and new id %v", d.mac.String(), hex.EncodeToString(d.key), hex.EncodeToString(d.id))
+
+		Logger.Printf("Device %v ready - updating to a new key %v and new id %v", d.mac.String(), hex.EncodeToString(d.key), hex.EncodeToString(d.id))
 		processedPayload.Type = AuthOK
 		return processedPayload, nil
 	}
@@ -442,6 +462,7 @@ func (d *device) learn() (Response, error) {
 // Information on the RF learning sequence can be found at:
 // https://github.com/mjg59/python-broadlink/issues/87
 func (d *device) learnRF() (Response, error) {
+
 	deadline := time.Now().Add(learnTimeout * time.Second)
 	defer d.close()
 	_, err := d.serverRequest(d.enterRFSweepPayload())
@@ -484,9 +505,11 @@ func (d *device) learnRF() (Response, error) {
 				// receive a response without an error.
 				// In any case, we have a learningtimeout so we won't be looping
 				// indefinitely.
+				Logger.Printf("Learn RF Err: %#v %#v",err,resp)
 				continue
 			}
 			if resp.Type == RawData {
+				log.Println("Everything went ok with rf learning")
 				return resp, nil
 			}
 		}

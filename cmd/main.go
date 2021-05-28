@@ -304,9 +304,9 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 	rf := strings.Contains(path, "/rf/")
 
 	if (rf) {
-		fmt.Fprintln(w, "Waiting for RF remote long press<blink>....</blink>")
+		fmt.Fprintln(w, "Waiting for RF remote. IMPORTANT - press on for 1 second and release until learning is finished <blink>....</blink>")
 	}else{
-		fmt.Fprintln(w, "Waiting for remote presses<blink>....</blink>")
+		fmt.Fprintln(w, "Waiting for ir remote presses<blink>....</blink>")
 	}
 
 	fmt.Fprintln(w, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>")
@@ -323,6 +323,7 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if (rf) {
+
 		data, err = broadlink.LearnRF(device)
 	}else{
 		data, err = broadlink.Learn(device)
@@ -765,6 +766,8 @@ type JsonResp struct {
 }
 
 func main() {
+
+	broadlinkgo.Logger.SetFlags(0)//disable logging
 	
 	var cpath=""
 	
