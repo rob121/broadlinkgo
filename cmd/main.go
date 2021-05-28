@@ -1,23 +1,25 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/GeertJohan/go.rice"
-	"github.com/rob121/broadlinkgo"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"text/template"
 	"time"
-	"encoding/gob"
-    "bytes"
-    "runtime"
+
+	"github.com/GeertJohan/go.rice"
+
+	"github.com/2opremio/broadlinkgo"
 )
 
 var broadlink broadlinkgo.Broadlink
@@ -302,9 +304,9 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 	rf := strings.Contains(path, "/rf/")
 
 	if (rf) {
-		fmt.Fprintln(w, "Waiting for RF remote long press<blink>....</blink>")
+		fmt.Fprintln(w, "Waiting for RF remote. IMPORTANT - press on for 1 second and release until learning is finished <blink>....</blink>")
 	}else{
-		fmt.Fprintln(w, "Waiting for remote presses<blink>....</blink>")
+		fmt.Fprintln(w, "Waiting for ir remote presses<blink>....</blink>")
 	}
 
 	fmt.Fprintln(w, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>")
@@ -321,6 +323,7 @@ func learnChildHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if (rf) {
+
 		data, err = broadlink.LearnRF(device)
 	}else{
 		data, err = broadlink.Learn(device)
@@ -728,6 +731,34 @@ func respond(w http.ResponseWriter, code int, message string, payload interface{
 
 }
 
+func loadDevices(){
+
+
+	dev := getDeviceSaved()
+
+	if(len(dev)>0){
+
+		for k,v := range dev {
+
+
+
+			devicetype := v[1]
+
+			ip := v[0]
+
+			mac := k
+
+			deviceType, _ := strconv.Atoi(devicetype)
+
+			broadlink.AddManualDevice(ip, mac, deviceType)
+
+		}
+
+	}
+
+
+}
+
 type JsonResp struct {
 	Code    int         `json:"code"`
 	Payload interface{} `json:"payload"`
@@ -735,6 +766,8 @@ type JsonResp struct {
 }
 
 func main() {
+
+	broadlinkgo.Logger.SetFlags(0)//disable logging
 	
 	var cpath=""
 	
@@ -779,6 +812,8 @@ func main() {
 	
 	if(mode=="auto"){
 
+
+
 	go func() {
 		for range ticker.C {
 
@@ -809,28 +844,9 @@ func main() {
 	}else{
 		
 		broadlink = broadlinkgo.NewBroadlink()
-	
+
 		dev := getDeviceSaved()
-		
-		if(len(dev)>0){
-			
-			for k,v := range dev {
-				
-		
-				
-				devicetype := v[1]
-				
-				ip := v[0]
-				
-				mac := k
-				
-				deviceType, _ := strconv.Atoi(devicetype)
-
-	            broadlink.AddManualDevice(ip, mac, deviceType)
-	            
-	        }
-
-		}
+	    loadDevices()
 		
         	go func() {
 	        	
@@ -894,6 +910,39 @@ func main() {
 	http.HandleFunc("/manualdevice/", manualDeviceHandler)
 	http.HandleFunc("/status/", statusHandler)
 	http.HandleFunc("/cmd/", cmdHandler)
+	http.HandleFunc("/discover/",func(w http.ResponseWriter, r *http.Request) {
+
+
+
+		path := r.URL.Path
+		path = strings.Replace(path, " ", "_", -1)
+		path = strings.ToLower(path)
+
+		parts := strings.Split(path,"/")
+
+		if(len(parts)<2){
+
+			fmt.Fprintf(w,`{"ok": "false"}`)
+			return
+		}
+
+		log.Println(parts[2])
+
+		hst := parts[2]
+
+		err := broadlink.DiscoverHost(hst)
+
+		if(err==nil){
+
+			fmt.Fprintf(w,`{"ok": "true"}`)
+
+		}else{
+
+			fmt.Fprintf(w,`{"ok": "false"}`)
+
+		}
+
+	})
 	http.HandleFunc("/macro/", macroHandler)
 	http.HandleFunc("/learnchild/", learnChildHandler)
 	http.HandleFunc("/learn/", learnHandler)

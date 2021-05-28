@@ -78,7 +78,7 @@
 		     </div>
 	     </form>
 	     
-	    {{if ne .Mode "auto"}} 
+	    {{if ne .Mode "auto1"}}
 	     
 	    <a id="add_device_btn" data-toggle="collapse" href="#add_device" role="button"  class='btn btn-info' ><span class='oi oi-play-circle' title='icon name' aria-hidden='true'></span> Add Device Manually</a>
 	    <br>
@@ -88,7 +88,7 @@
 	    
 	     <form action="/manualdevice/" method="POST" id="add_device" enctype="multipart/form-data" class="collapse" >
 		     <div class="form-group">
-			 <label>Send Command to:</label>
+			 <label>New Device:</label>
 		    {{.DeviceList}}	
 		    </div>
 		       <div class="form-group">
@@ -322,11 +322,15 @@
 		 
 		 
 		 
-		 ht="<tr><th width='60%'>Commands</td>    <th></th> <th></th></tr>"
+		 htm="<tr><th width='60%'>Commands</td>    <th></th> <th></th></tr>";
+         ht="";
+         ct = 0;
+         nc="<tr><td colspan='3' > No Commands Configured </td></tr>";
+
 		 for (var key in resp.payload.commands){ 
 			 
 			// console.log(resp.payload.commands[key]);
-			 
+			 ct=1;
 			 ht+="<tr><td>"+resp.payload.commands[key]+"</td>";
 
 			 ht+="<td>";
@@ -336,7 +340,7 @@
 			 
 		 }
 		 
-		 $("#cmds").html("<table class='table'>"+ht+"</table>");
+		 $("#cmds").html("<table class='table'>"+htm+(ct==0 ? nc: "")+ht+"</table>");
 		 
 		 
 	 },"json");	
