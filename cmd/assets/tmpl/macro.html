@@ -1,0 +1,411 @@
+{{template "header" }}
+<style>
+    #macros > div > div.btn {cursor:move;}
+</style>
+<script>
+
+    function serializeCmds(){
+
+        cmds = [];
+
+        $("#macros > div").each(function(i,v){
+
+
+            cmd = {
+                Order: i,
+                Repeat: parseInt($(v).attr("data-repeat")),
+                Type: $(v).attr("data-type"),
+                Command: $(v).attr("data-id")
+            }
+
+            cmds.push(cmd);
+
+        });
+
+        return cmds;
+
+
+    }
+
+    function calcPath(){
+
+        cmda = [];
+
+
+        cmda.push(window.location.protocol+"//"+window.location.host);
+
+        dev = $("#device").val();
+
+        if(dev.length>0){
+
+            cmda.push("device");
+            cmda.push(dev);
+
+        }
+
+
+        cmda.push("macro");
+
+        $("[data-command]").each(function(i,cmd){
+
+
+            val = $(cmd).attr("data-command");
+            rep = $(cmd).attr("data-repeat");
+
+            if(rep.length>0 && rep>0){
+
+                val = val+":"+rep;
+            }
+
+            cmda.push(val);
+
+        });
+
+        if(cmda.length>0){
+            $("pre").removeClass("d-none");
+        }else{
+            $("pre").addClass("d-none");
+        }
+
+        $("pre").html(cmda.join("/",cmda));
+
+    }
+
+    function cleanupIcons() {
+
+        $(".commandrow i").removeClass("fa-stop-circle").addClass("fa-level-down-alt");
+
+        $("#macros > div").each(function () {
+
+            if ($(this).attr("data-command").includes("delay")) {
+
+                $("i", this).addClass("fa-stopwatch");
+
+            }
+        });
+
+        $(".commandrow:last-of-type i").removeClass("fa-level-down-alt").removeClass("fa-stopwatch").addClass("fa-stop-circle");
+
+    }
+
+    function cbEditForm(text,ele){
+
+        data = $.parseJSON(text)
+
+
+        if(data.code==200){
+
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-check-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-success");
+
+        }else{
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-times-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-danger");
+
+        }
+
+        return text;
+    }
+
+    jQuery(function($){
+
+        cleanupIcons();
+
+        calcPath();
+
+        $(document).on("submit","#macroform",function(e){
+
+            e.preventDefault();
+
+            frm = {
+                Id: $("#id").val(),
+                Label: $("#label").val(),
+                Icon: $("#icon").val(),
+                Device: $("#device").val(),
+                Color: $("#color").val(),
+                Commands: serializeCmds()
+            }
+
+            $.post("/macrosave",JSON.stringify(frm),function() {
+                    //
+            });
+
+
+        });
+
+        $("#device").change(function(){
+            calcPath();
+        });
+
+        $(document).on("click",".remove",function(){
+
+            $(this).parent().parent().remove();
+            calcPath();
+            cleanupIcons();
+
+        });
+
+        $( "#macros" ).sortable({
+            update: function( ) {
+
+                cleanupIcons();
+                calcPath();
+            }
+        });
+
+        $( "#macros" ).disableSelection();
+
+        $(document).on("click",".addmacro",function(e){
+
+            e.preventDefault();
+
+            if(this.value==""){
+                return;
+            }
+
+            cmd = $("#command").val();
+
+
+            rep = $("#repeat").val();
+
+            label = $("#command option:selected").attr("data-label");
+
+            id = $("#command option:selected").attr("data-id");
+
+            typ = $("#command option:selected").attr("data-type");
+
+            msg = "";
+
+            cmds = "";
+
+
+            icon = 'fa-level-down-alt';
+
+            if(rep.length>0 & rep>0){
+
+
+
+                if(cmd=="delay"){
+                    cmds = ""
+                    icon = "fa-stopwatch";
+                    msg = " for "+rep+"s";
+                }else{
+                    cmds = " and "
+                    msg = " repeat "+rep+"x";
+                }
+            }
+
+
+            $item = '<div data-id="'+id+'" data=type="'+typ+'" data-repeat="'+rep+'" data-command="'+cmd+'" class="col-md-12 commandrow p-2" >';
+
+            $item += '<i style="width:30px" class="mt-1 mr-1 fas fx-lg '+icon+'" ></i>';
+
+            $item += '<div class="block btn btn-outline-primary">Execute ' + label + cmds  + msg + '   <i class="fas remove text-danger fa-times" ></i></div>';
+
+            $item += '</div>';
+
+
+
+            $("#macros").append($item);
+
+
+            cleanupIcons();
+
+            calcPath();
+
+        });
+
+
+        var items = $(".icon_sel i");
+
+        $.each(items,function(k,item) {
+
+            var classlist = $(item).attr("class");
+            var classArr = classlist.split(/\s+/);
+
+            $.each(classArr, function (index, value) {
+
+                if (value.includes("fa-") && value == "{{.Macro.Icon}}") {
+
+                    det = $(item).closest("details");
+
+                    ht1 =  $('<i>').append($(item).clone()).html();
+
+
+                    ht = ht1+$(item).parent("a").text()
+                    $("summary", det).html(ht);
+
+                }
+
+            });
+        });
+    });
+
+
+
+    $(document).on("click","details a",function(e){
+
+
+        e.preventDefault();
+
+        var classlist = $("i",this).attr("class");
+        var classArr = classlist.split(/\s+/);
+
+        $.each(classArr, function(index, value){
+
+
+            if(value.includes("fa-")){
+
+                chosen = value
+
+            }
+
+        });
+
+        if(chosen.length>0){
+
+            $("#icon").val(chosen);
+
+            det = $(this).closest("details");
+
+            $("summary",det).html($(this).html());
+
+            $(this).closest("details").removeAttr("open");
+
+        }
+
+
+    });
+
+
+</script>
+<main>
+    <div class="container-fluid">
+        <h1 class="mt-4"><i class="fas fa-puzzle-piece" ></i> Macro</h1>
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card shadow-lg border-0 rounded-lg mt-0">
+                    <form id="macroform" data-callback="cbEditForm"  class="row mb-3" method="POST" action="/macrosave" >
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-group mb-3 mb-md-0">
+                                    <label class="form-label" for="label">Label</label>
+                                    <input name="label" class="form-control" id="label" value="{{.Macro.Label}}" type="text" placeholder="ie Volume Up" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                            <div class="form mb-3 mb-md-0">
+                                <label class="form-label" for="device">Target Device</label>
+                                {{.DeviceSelect}}
+                            </div>
+                           </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="icon">Icon</label>
+                                    <input type="hidden" name="icon" value="{{.Macro.Icon}}" id="icon" />
+                                    {{.IconSelect}}
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="color">Color</label>
+                                    <input class="form-control" name="color" id="color" type="color" value="{{.Macro.Color}}" list="colors" />
+                                    <datalist id="colors">
+                                        <option>#337ab7</option>
+                                        <option>#5cb85c</option>
+                                        <option>#5bc0de</option>
+                                        <option>#aa320b</option>
+                                        <option>#34495e</option>
+                                        <option>#2c3e50</option>
+                                        <option>#8e44ad</option>
+                                        <option>#e67e22</option>
+                                        <option>#7f8c8d</option>
+                                    </datalist>
+                                </div>
+                            </div>
+                            <input type="hidden" id="id" value="{{.Macro.Id}}" name="id"/>
+                            <div class="col-md-12 mt-3">
+                                <div class="card-header">Macro Builder</div>
+                                <div class="card-body row">
+                                    <div class="col-3 mb-3">
+                                    <select id="command" class="commands form-control">
+                                        <option value="" >-- Select Command to Add --</option>
+                                        {{ range  $k,$v := .Commands }}
+                                        <option data-icon="{{$v.Icon}}" data-type="command" data-color="{{$v.Color}}"  data-label="{{$v.Label}}" data-id="{{$v.Id}}" value="{{$v.ToCmd}}" >{{$v.Label}} - {{$v.Equipment.Manufacturer}} {{$v.Equipment.Model}}</option>
+                                        {{end}}
+                                    </select>
+                                    </div>
+                                    <div class="col-2 mb-3">
+                                        <input class="form-control" id="repeat" name="repeat" placeholder="Repeat Count" type="number" value="" list="repeats" />
+                                        <datalist id="repeats">
+                                            <option>0</option>
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                            <option>6</option>
+                                            <option>7</option>
+                                            <option>8</option>
+                                            <option>9</option>
+                                            <option>10</option>
+                                        </datalist>
+                                    </div>
+                                    <div class="col-2 mb-3">
+                                        <a href="" class="addmacro btn btn-dark" ><i class="fas fa-plus-circle" ></i> Add</a>
+                                    </div>
+
+
+                                    <div class="col-md-12 mb-3">
+                                        <div id="macros" >
+                                            {{ range $k,$v := .Macro.Commands }}
+                                            {{ $sc := $v.GetCommand }}
+                                             <div data-id="{{$v.Command}}" data-repeat="{{$v.Repeat}}" data-command="{{$sc.ToCmd}}" class="col-md-12 commandrow p-2" >
+                                             <i style="width:30px" class="mt-1 mr-1 fas fx-lg fa-level-down-alt" ></i>
+                                             <div class="block btn btn-outline-primary">
+                                                 {{if $sc }}
+                                                 Execute {{ $sc.Label }}
+                                                 {{ if gt $v.Repeat 0 }}
+                                                 {{ if eq $v.Command "delay"  }}
+                                                   for {{$v.Repeat }}s
+                                                 {{ else }}
+                                                  and repeat {{$v.Repeat }}x
+                                                 {{ end }}
+                                                 {{ end }}
+                                                 {{ end }} <i class="fas remove text-danger fa-times" ></i></div>
+                                             </div>
+                                            {{end}}
+
+
+                                        </div>
+                                        <pre style="word-wrap: break-word" class="mt-2 p-3 d-none text-white bg-dark">
+                                        </pre>
+                                    </div>
+                            </div>
+                            </div>
+
+
+                    <div class="card-body">
+
+                        <div class="mt-4 mb-0 ">
+                            <button id="savebutton" class="mr-2  btn btn-primary" ><i class="fas fa-save" ></i> Save</button>
+                            <a href="/commands" class=" btn btn-info mr-2" ><i class="fas fa-arrow-left" ></i> Back</a>
+
+                        </div>
+                    </div>
+                        </form>
+                    <div class="card-footer text-center py-3">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</main>
+{{ template "footer" }}

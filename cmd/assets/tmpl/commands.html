@@ -1,0 +1,81 @@
+{{ template "header" }}
+    <script>
+
+        Mustache.tags = ["||","||"];
+
+        function handleStatus(text,ele){
+
+                data = $.parseJSON(text)
+                var out =""
+                $("#devices").html("");
+
+                jQuery.each(data.payload.Commands,function(index,value){
+
+
+
+                    out = out + renderTemplate(value,"commandRowTemplate")
+
+
+                });
+
+                return out;
+        }
+
+    </script>
+    <script id="commandRowTemplate" type="x-tmpl-mustache">
+                     <tr>
+                      <td>||Id||</td>
+                       <td>||Label||</td>
+                        <td><i class="fas ||Icon||"></i></td>
+                         <td><span style="background-color:||Color||;display:block;width:30px;height:20px;" >&nbsp;</span></td>
+                         <td>||Equipment.Manufacturer||/||Equipment.Model||</td>
+                         <td>
+                          <a onclick="return confirm('Are you sure you want to remove?');" title="This will force remove, but if the device is automatically detected it will be added back"  class="btn btn-danger float-right"  hx-post="commandremove/||Id||" hx-target="#devices" hx-swap="none" href="/commandremove/||Id||"><i class="fas fa-exclamation-triangle" > </i> Remove</a>
+                           <a class="ml-2 mr-2 btn btn-primary float-right" href="/command/||Id||"><i class="fas fa-edit" > </i> Edit</a>
+
+                         </td>
+                     </tr>
+    </script>
+
+        <main>
+            <div class="container-fluid">
+                <h1 class="mt-4"><i class="fas fa-terminal mr-1"></i> Commands</h1>
+
+
+                <div class="row mt-4" >
+                    <div class="col-xl-12">
+                        <div class="card mb-4">
+                            <div class="card-header">
+
+                                <a class="float-right btn btn-success" href="/command/new" ><i class="fas fa-plus-square" ></i> Add Command</a>
+
+                            </div>
+                            <div class="card-body p-0">
+
+                                    <div class="dataTable-container p-1">
+                                    <table class="dataTable-table table table-striped" id="dataTable" width="100%" cellspacing="0">
+                                        <thead class="thead-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Label</th>
+                                            <th>Icon</th>
+                                            <th>Color</th>
+                                            <th>Equipment</th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="devices" data-callback="handleStatus" hx-get="/commands.json" hx-trigger="load delay:100ms, every 5s">
+
+                                        </tbody>
+                                    </table>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+{{ template "footer" }}

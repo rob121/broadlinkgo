@@ -1,0 +1,35 @@
+
+#btnex {
+        color:#FFF;
+}
+
+        details[open] p{
+                position:absolute;
+                display:block;
+                background-color: #FFF;
+                padding:5px;
+                min-width:300px;
+                margin: 0em;
+                border-radius: 5px;
+                border-width: 1px;
+                border-style: solid;
+                z-index:1000;
+                border-color: rgb(133, 133, 133);
+                transition: all ease-in 1s ;
+                cursor:pointer;
+        }
+        details[open] p a{
+                border-bottom: 1px solid rgb(133, 133, 133);
+                padding:3px 5px;
+                cursor:pointer;
+                display:block;
+                color: #1b1e21;
+                text-decoration:none;
+
+        }
+        details[open] a:hover{
+
+                background-color:#b3b3cc;
+
+
+        }

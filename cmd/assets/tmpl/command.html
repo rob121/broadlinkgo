@@ -1,0 +1,221 @@
+{{template "header" }}
+<script>
+    function cbEditForm(text,ele){
+
+        data = $.parseJSON(text)
+
+
+        if(data.code==200){
+
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-check-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-success");
+
+        }else{
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-times-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-danger");
+
+        }
+
+        return text;
+    }
+
+    $(function(){
+
+        $("#btnex").click(function(e){
+
+            e.preventDefault();
+            $.get(this.href);
+
+        });
+
+        $(document).on("change","#device",function(){
+
+
+            $("#apicall").html("/device/"+this.value+"/cmd/{{.Command.ToCmd}}");
+
+            $("#apicallfull").html(window.location.origin+"/device/"+this.value+"/cmd/{{.Command.ToCmd}}");
+
+            $("#btnexfull").attr("href",window.location.origin+"/device/"+this.value+"/cmd/{{.Command.ToCmd}}");
+
+            $("#btnex").attr("href",window.location.origin+"/device/"+this.value+"/cmd/{{.Command.ToCmd}}");
+        });
+
+        var items = $(".icon_sel i");
+
+        $.each(items,function(k,item) {
+
+
+
+            var classlist = $(item).attr("class");
+            var classArr = classlist.split(/\s+/);
+
+
+            $.each(classArr, function (index, value) {
+
+                if (value.includes("fa-") && value == "{{.Command.Icon}}") {
+
+                    det = $(item).closest("details");
+
+                    ht1 =  $('<i>').append($(item).clone()).html();
+
+
+                    ht = ht1+$(item).parent("a").text()
+                    $("summary", det).html(ht);
+
+
+                }
+
+            });
+        });
+    });
+
+
+    $(document).on("click","details a",function(e){
+
+
+        e.preventDefault();
+
+        var classlist = $("i",this).attr("class");
+        var classArr = classlist.split(/\s+/);
+
+        $.each(classArr, function(index, value){
+
+
+            if(value.includes("fa-")){
+
+                chosen = value
+
+            }
+
+        });
+
+        if(chosen.length>0){
+
+            $("#icon").val(chosen);
+
+            det = $(this).closest("details");
+
+            $("summary",det).html($(this).html());
+
+            $(this).closest("details").removeAttr("open");
+
+        }
+    });
+</script>
+<main>
+    <div class="container-fluid">
+        <h1 class="mt-4"><i class="fas fa-terminal mr-1"></i> Command</h1>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow-lg border-0 rounded-lg mt-0">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <form id="learnform" hx-post="/commandsave" hx-boost="true" dep-data-callback="cbEditForm"  class="row mb-3" method="POST" action="/commandsave" >
+                            <div class="col-md-12 mb-3">
+                                <div class="form-group mb-3 mb-md-0">
+                                    <label class="form-label" for="label">Label</label>
+                                    <input name="label" class="form-control" id="learnlabel" value="{{.Command.Label}}" type="text" placeholder="ie Volume Up" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="equipment">Equipment</label><br>
+                                    {{if .Command.Equipment.Manufacturer}}
+                                      <input type="text" class="form-control" disabled="disabled" value="{{.Command.Equipment.Manufacturer}}/{{.Command.Equipment.Model}}" />
+                                    {{else}}
+                                      {{.EquipmentSelect}}
+                                    {{end}}
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="path">Code Path</label><br>
+                                    <input type="text" class="form-control" disabled="disabled" value="{{.Command.Path}}" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="icon">Icon</label>
+                                    <input type="hidden" name="icon" value="{{.Command.Icon}}" id="icon" />
+                                    {{.IconSelect}}
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="color">Button Color</label><br>
+                                    <input name="color" type="color" class="form-control" value="{{.Command.Color}}" list="colors" />
+                                    <datalist id="colors">
+                                            <option>#337ab7</option>
+                                            <option>#5cb85c</option>
+                                            <option>#5bc0de</option>
+                                            <option>#aa320b</option>
+                                            <option>#34495e</option>
+                                            <option>#2c3e50</option>
+                                            <option>#8e44ad</option>
+                                            <option>#e67e22</option>
+                                            <option>#7f8c8d</option>
+                                    </datalist>
+                                </div>
+                            </div>
+                            <input type="hidden" value="{{.Command.Id}}" name="id"/>
+                            <div class="mt-4 mb-0 ">
+                                <button id="savebutton" class="mr-2 foat-right btn btn-primary" ><i class="fas fa-save" ></i> Save</button>
+                                <a href="/commands?{{.getTimestamp}}" class="float-right btn btn-info mr-2" ><i class="fas fa-arrow-left" ></i> Back</a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center py-3">
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-md-6">
+                <div class="card bg-primary text-white mb-4">
+                    <div class="card-body">Send command to:</div>
+                    <div  class="card-footer d-flex align-items-center justify-content-between">
+                        <div class="row">
+                            <div class="col-10">
+                                {{.DeviceSelect}}
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card bg-secondary text-white mb-4">
+                    <div class="card-body">Trigger this command:</div>
+                    <div  class="card-footer d-flex align-items-center justify-content-between">
+                         <a href="/cmd/{{.Command.ToCmd}}" target="_blank" id="btnex" class="btn" style="background-color:{{.Command.Color}}">
+                             <i class="fas {{.Command.Icon}}"></i>&nbsp;
+                         </a>
+                    </div>
+                </div>
+                <div style="background-color:#030303" class="card text-white mb-4">
+                    <div class="card-body row">
+                        <div class="col-10">
+                        Api call for command:
+                        </div>
+                        <div class="col-2">
+                            <button copy-target="#apicallfull" class="copy btn btn-light">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div  class="card-footer d-flex">
+                        <pre id="apicall" style="color:#FFF">
+/cmd/{{.Command.ToCmd}}
+                        </pre>
+                        <span id="apicallfull" style="display:none">
+                         /cmd/{{.Command.ToCmd}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</main>
+{{ template "footer" }}

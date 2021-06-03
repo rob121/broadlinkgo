@@ -1,0 +1,88 @@
+{{template "header" }}
+<script>
+    function cbEditForm(text,ele){
+
+
+        data = $.parseJSON(text)
+
+
+        if(data.code==200){
+
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-check-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-success");
+
+        }else{
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-times-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-danger");
+
+        }
+
+
+
+        return text;
+
+
+    }
+
+</script>
+
+ <main>
+            <div class="container-fluid">
+                <h1 class="mt-4"><i class="fas fa-server"></i> Equipment</h1>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <div class="card shadow-lg border-0 rounded-lg mt-5">
+                            <div class="card-header"></div>
+                            <div class="card-body">
+                                <form id="equipmentform" hx-post="/equipmentsave" data-callback="cbEditForm" hx-swap="none" class="row mb-3" method="POST" action="/equipmentsave" >
+
+
+                                    <div class="col-md-12 mb-3">
+                                        <div class="form-group mb-3 mb-md-0">
+                                            <label class="form-label" for="equipmentlabel">Label</label>
+                                            <input name="label" class="form-control" id="equipmentlabel" value="{{.Equipment.Label}}" type="text" placeholder="Label" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="form mb-3 mb-md-0">
+                                            <label class="form-label" for="equipmentmanufacturer">Manufacturer</label>
+                                            <input name="manufacturer" class="form-control" id="equipmentmanufacturer" value="{{.Equipment.Manufacturer}}" type="text" placeholder="Yamaha" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="form mb-3 mb-md-0">
+                                            <label class="form-label" for="equipmentmodel">Model</label>
+                                            <input name="model" class="form-control" id="equipmentmodel" value="{{.Equipment.Model}}" type="text" placeholder="ABC-123" />
+                                        </div>
+                                    </div>
+
+                                    {{if .Equipment.Id}}
+                                    <div class="col-md-12 mb-3">
+                                        <div class="form mb-3 mb-md-0">
+                                            <label class="form-label" for="equipmentid">ID</label>
+                                            <input class="form-control"  disabled="true" value="{{.Equipment.Id}}" type="text" placeholder="System ID" />
+                                            <input name="id" class="form-control" id="equipmentid" value="{{.Equipment.Id}}" type="hidden" placeholder="System ID" />
+
+                                        </div>
+                                    </div>
+                                    {{ end }}
+                                    <div class="mt-4 mb-0">
+                                        <button id="savebutton" class="right btn btn-primary" ><i class="fas fa-save" ></i> Save</button>
+                                        <a href="/equipments" class="right btn btn-info" ><i class="fas fa-arrow-left" ></i> Back</a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-footer text-center py-3">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </main>
+{{ template "footer" }}

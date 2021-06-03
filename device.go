@@ -191,12 +191,6 @@ func (d *device) setupConnection() error {
 		return err
 	}
 
-	/*
-		file, _ := conn.(*net.UDPConn).File()
-		fd := file.Fd()
-		syscall.SetsockoptInt((int)(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, 0)
-	*/
-
 	d.conn = &conn
 	return nil
 }

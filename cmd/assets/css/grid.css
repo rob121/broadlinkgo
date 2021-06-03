@@ -1,0 +1,96 @@
+.grid-container {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 10px;
+    bottom: 0;
+    overflow: auto;
+}
+.grid {
+    position: relative;
+    height: 100%;
+    list-style: none;
+    /* Will be modified by the grid jquery lib, depending on the items */
+    -webkit-transition: width 0.2s,
+    height 0.2s;
+    transition: width 0.2s,
+    height 0.2s;
+}
+.grid li {
+    position: absolute;
+    z-index: 1;
+    font-weight: bold;
+    line-height: 4em;
+    text-align: center;
+    cursor: pointer;
+    -webkit-transition: top 0.2s,
+    left 0.2s,
+    width 0.1s,
+    height 0.1s,
+    font-size 0.1s,
+    line-height 0.1s;
+    transition: top 0.2s,
+    left 0.2s,
+    width 0.1s,
+    height 0.1s,
+    font-size 0.1s,
+    line-height 0.1s;
+}
+.grid li .inner {
+    position: absolute;
+    top: 0;
+    bottom: 10px;
+    left: 10px;
+    right: 0;
+    -webkit-transition: background 3s;
+    transition: background 3s;
+}
+.grid li.changed .inner {
+    background: #EAF7F6 ;
+    -webkit-transition: none;
+    transition: none;
+}
+.grid li.ui-draggable-dragging {
+    -webkit-transition: none;
+    transition: none;
+}
+.grid li.position-highlight {
+    -webkit-transition: none;
+    transition: none;
+}
+.grid li.position-highlight .inner {
+    border: none;
+    background: #ccc;
+}
+.grid .controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    font-size: 0.4em;
+    font-weight: normal;
+    line-height: 1em;
+    opacity: 0;
+    -webkit-transition: opacity 0.2s;
+    transition: opacity 0.2s;
+}
+.grid .controls .resize {
+    font-size: 0.6em;
+    float: left;
+    margin: 5px 5px 0 0;
+    padding: 0.3em;
+    background: #fafafa;
+    color: #444;
+    text-decoration: none;
+}
+.grid .controls .resize:hover {
+    background: #f1f1f1;
+}
+.grid li:hover .controls {
+    opacity: 1;
+}
+
+.grid .btn {
+
+    color:#FFF;
+}

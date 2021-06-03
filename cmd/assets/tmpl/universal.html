@@ -1,0 +1,151 @@
+{{template "header" }}
+<script>
+
+    jQuery(function($) {
+        var Grid = {
+            currentSize: 0,
+            buildElements: function($gridContainer, items) {
+                var item, i;
+                for (i = 0; i < items.length; i++) {
+                    item = items[i];
+                    $item = $(
+                        '<li>' +
+                        '<a href="'+item.Command+'"  class="text-light inner btn" style="background-color:'+item.Color+'" >' +
+                        '<i class="fas '+item.Icon+'"></i>'+
+                        '</a>' +
+                        '</li>'
+                    );
+
+                    $item.attr({
+                        'data-w': item.W,
+                        'data-h': item.H,
+                        'data-x': item.X,
+                        'data-y': item.Y,
+                        'data-icon': item.Icon,
+                        'data-command': item.Command,
+                        'hx-post': item.Command,
+                        'data-color': item.Color
+                    });
+
+                    $item[0].id="a"+generateUUID();
+
+                    $gridContainer.append($item);
+
+
+                    this.currentSize++;
+                }
+            },
+            serialize: function(){
+
+                var data = Array();
+
+                $('#grid > li').not(".position-highlight").each(function(){
+
+                    var item = {
+                        W: $(this).attr("data-w"),
+                        H:  $(this).attr("data-h"),
+                        X:  $(this).attr("data-x"),
+                        Y:  $(this).attr("data-y"),
+                        Icon:  $(this).attr("data-icon"),
+                        Command:  $(this).attr("data-command"),
+                        Color:  $(this).attr("data-color")
+                    };
+
+                    data.push(item);
+
+                });
+
+                return data;
+
+            },
+            resize: function(size) {
+                if (size) {
+                    this.currentSize = size;
+                }
+
+                $("#grid").gridList("resize", this.currentSize);
+                this.save();
+            },
+            onChange: function(changedItems){
+
+                this.save();
+                this.flashItems(changedItems);
+
+            },
+            save: function(){
+                //save it
+                var data = {
+                    Id:  $("#remoteid").val(),
+                    Label: $("#remotelabel").val(),
+                    Device: $("#device").val(),
+                    Buttons: this.serialize()
+                };
+                $.post("/remotesavebuttons",JSON.stringify(data),function(){});
+            },
+            flashItems: function(items) {
+                // Hack to flash changed items visually
+                for (var i = 0; i < items.length; i++) {
+                    (function($element) {
+                        $element.addClass('changed')
+                        setTimeout(function() {
+                            $element.removeClass('changed');
+                        }, 0);
+                    })(items[i].$element);
+                }
+            }
+        };
+
+        $(window).resize(function() {
+            $('#grid').gridList('reflow');
+        });
+
+        items = {{.Remote.Buttons}};
+
+        Grid.buildElements($('#grid'),items);
+
+        $("#grid").gridList({
+            lanes: 6,
+            direction:"horizontal",
+            dragAndDrop: false,
+            widthHeightRatio: 200 / 220,
+            heightToFontSizeRatio: 0.15,
+            onChange: function(changedItems) {
+                Grid.flashItems(changedItems);
+            }
+        });
+
+
+        $("#grid li a").click(function(e){
+
+             e.preventDefault();
+             $.get(this.href);
+
+        });
+
+
+
+    });
+
+</script>
+<main>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-3"> </div>
+            <div class="col-lg-6">
+                <div class="card mt-0 p-1">
+                    <div class="bg-dark card mt-2 p-2" style="height:600px;">
+                        <div class="grid-container mt-2">
+                            <ul id="grid" class="grid">
+                                <li class="position-highlight">
+                                    <div class="inner"></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3"> </div>
+        </div>
+</main>
+
+{{ template "footer" }}

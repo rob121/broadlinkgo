@@ -1,0 +1,168 @@
+{{template "header" }}
+<script>
+   $(function(){
+
+       $("#learnform").on("submit",function(){
+
+           $("#terminal").show();
+
+       });
+
+
+   });
+
+   jQuery(document).on("click","details a",function(e){
+
+
+       e.preventDefault();
+
+       var classlist = $("i",this).attr("class");
+       var classArr = classlist.split(/\s+/);
+
+       $.each(classArr, function(index, value){
+
+
+           if(value.includes("fa-")){
+
+               chosen = value
+
+           }
+
+       });
+
+       if(chosen.length>0){
+
+           $("#icon").val(chosen);
+
+           det = $(this).closest("details");
+
+           $("summary",det).html($(this).html());
+
+           $(this).closest("details").removeAttr("open");
+
+       }
+
+
+
+   });
+</script>
+<style>
+    details[open] p{
+        position:absolute;
+        display:block;
+        background-color: #FFF;
+        padding:5px;
+        min-width:300px;
+        margin: 0em;
+        border-radius: 5px;
+        border-width: 1px;
+        border-style: solid;
+        z-index:1000;
+        border-color: rgb(133, 133, 133);
+        transition: all ease-in 1s ;
+        cursor:pointer;
+    }
+    details[open] p a{
+        border-bottom: 1px solid rgb(133, 133, 133);
+        padding:3px 5px;
+        cursor:pointer;
+        display:block;
+        text-decoration:none;
+
+    }
+    details[open] a:hover{
+
+        background-color:#b3b3cc;
+
+
+    }
+</style>
+<main>
+    <div class="container-fluid">
+        <h1 class="mt-4"><i class="fas fa-glasses"></i> Learn</h1>
+
+
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card shadow-lg border-0 rounded-lg mt-0">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <form id="learnform" target="terminal"  class="row mb-3" method="POST" action="/learncode" >
+                            <div class="col-md-12 mb-3">
+                                <div class="form-group mb-3 mb-md-0">
+                                    <label class="form-label" for="learnlabel">Label</label>
+                                    <input name="label" class="form-control" id="learnlabel" value="" type="text" placeholder="ie Volume Up" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="learndevice">Learn From</label>
+                                    {{.LearnDevice}}
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="learnequipment">Equipment</label>
+                                    {{.LearnEquipment}}
+                                 </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="learnicon">Icon</label>
+                                    <input type="hidden" name="icon" value="" id="icon" />
+                                    {{.IconSelect}}
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="learcolor">Button Color</label><br>
+                                <input name="color" type="color" value="#000000" list="colors" />
+                                <datalist id="colors">
+                                    <option>#337ab7</option>
+                                    <option>#5cb85c</option>
+                                    <option>#5bc0de</option>
+                                    <option>#ffff00</option>
+                                    <option>#f0ad4e</option>
+                                    <option>#aa320b</option>
+                                    <option>#34495e</option>
+                                    <option>#2c3e50</option>
+                                    <option>#8e44ad</option>
+                                    <option>#e67e22</option>
+                                    <option>#ecf0f1</option>
+                                    <option>#7f8c8d</option>
+                                </datalist>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" value="ir" type="radio" name="method" id="flexRadioDefault2" checked>
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                    Learn IR?
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" valye="rf" type="radio" name="method" id="flexRadioDefault1">
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                    Learn RF?
+                                </label>
+                            </div>
+
+                            </div>
+                            <iframe style="display:none" id="terminal" src='/ping' name="terminal" width='100%' height='500px' ></iframe>
+
+                            <div class="mt-4 mb-0 ">
+                                <button id="savebutton" class="mr-2 foat-right btn btn-primary" ><i class="fas fa-glasses" ></i> Learn</button>
+                                <a href="/" class="float-right btn btn-info mr-2" ><i class="fas fa-arrow-left" ></i> Back</a>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center py-3">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{{ template "footer" }}

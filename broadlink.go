@@ -15,9 +15,8 @@ import (
 var Logger *log.Logger
 
 
-
 func init() {
-	Logger = log.New(os.Stderr, "xxx: ", log.Ldate | log.Ltime | log.Lshortfile)
+	Logger = log.New(os.Stderr, "lib: ", log.Ldate | log.Ltime | log.Lshortfile)
 }
 
 

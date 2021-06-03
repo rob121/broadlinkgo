@@ -1,0 +1,385 @@
+{{template "header" }}
+<script>
+
+    jQuery(function($) {
+    var Grid = {
+        currentSize: 0,
+        buildElements: function($gridContainer, items) {
+            var item, i;
+            for (i = 0; i < items.length; i++) {
+                item = items[i];
+                $item = $(
+                    '<li>' +
+                    '<a href="javascript:void(0);" data-toggle="modal" data-target="#remoteModal" class="text-light inner btn btn-secondary" style="background-color:'+item.Color+'" >' +
+                    '<i class="fas '+item.Icon+'"></i>'+
+                    '</a>' +
+                    '</li>'
+                );
+
+                $item.attr({
+                    'data-w': item.W,
+                    'data-h': item.H,
+                    'data-x': item.X,
+                    'data-y': item.Y,
+                    'data-icon': item.Icon,
+                    'data-command': item.Command,
+                    'data-color': item.Color
+                });
+
+                $item[0].id="a"+generateUUID();
+
+                $gridContainer.append($item);
+                this.currentSize++;
+            }
+        },
+        serialize: function(){
+
+            var data = Array();
+
+            $('#grid > li').not(".position-highlight").each(function(){
+
+                var item = {
+                    W: $(this).attr("data-w"),
+                    H:  $(this).attr("data-h"),
+                    X:  $(this).attr("data-x"),
+                    Y:  $(this).attr("data-y"),
+                    Icon:  $(this).attr("data-icon"),
+                    Command:  $(this).attr("data-command"),
+                    Color:  $(this).attr("data-color"),
+                    Label: ""
+                };
+
+                data.push(item);
+
+            });
+
+            return data;
+
+        },
+        resize: function(size) {
+            if (size) {
+                this.currentSize = size;
+            }
+
+            $("#grid").gridList("resize", this.currentSize);
+            this.save();
+        },
+        onChange: function(changedItems){
+
+            this.save();
+            this.flashItems(changedItems);
+
+        },
+        save: function(){
+            //save it
+            var data = {
+                Id:  $("#remoteid").val(),
+                Label: $("#remotelabel").val(),
+                Device: $("#device").val(),
+                Buttons: this.serialize()
+            };
+            $.post("/remotesavebuttons",JSON.stringify(data),function(){});
+        },
+        flashItems: function(items) {
+            // Hack to flash changed items visually
+            for (var i = 0; i < items.length; i++) {
+                (function($element) {
+                    $element.addClass('changed')
+                    setTimeout(function() {
+                        $element.removeClass('changed');
+                    }, 0);
+                })(items[i].$element);
+            }
+        }
+       };
+
+
+
+        $(document).on("change",".commands",function(){
+
+            if(this.value=="" || this.value=="delay"){
+                return;
+            }
+
+            icon = $("option:selected",this).data("icon");
+
+            color = $("option:selected",this).data("color");
+
+
+            $item = $(
+                '<li>' +
+                '<a href="javascript:void(0);" data-toggle="modal" data-target="#remoteModal" class="text-light inner btn btn-secondary" style="background-color:'+color+'" >' +
+                '<i class="fas '+icon+'"></i>'+
+                '</a>' +
+                '</li>'
+            );
+
+            $item.attr({
+                'data-w': 1,
+                'data-h': 1,
+                'data-x': 0,
+                'data-y': 0,
+                'data-command': $(this).val(),
+                'data-icon': icon,
+                'data-color': color
+            });
+
+            $item[0].id="a"+generateUUID();
+
+            $("#grid").append($item);
+
+            Grid.currentSize++;
+
+            $("#grid").gridList({
+                lanes: 6,
+                direction:"horizontal",
+                widthHeightRatio: 200 / 220,
+                heightToFontSizeRatio: 0.15,
+                onChange: function(changedItems) {
+                  Grid.onChange(changedItems);
+                }
+            });
+        });
+
+        $(document).on("click","[data-toggle]",function(){
+
+            id = $(this).parent("li").attr("id");
+
+            $(".resize").each(function(i,v) {
+                $(v).attr("data-target",id);
+            });
+
+            $(".remove").each(function(i,v) {
+                $(v).attr("data-target",id);
+            });
+
+            $(".color").each(function(i,v) {
+                $(v).attr("data-target",id);
+            });
+
+        });
+
+        $(window).resize(function() {
+            $('#grid').gridList('reflow');
+        });
+
+        items = {{.Remote.Buttons}};
+
+        Grid.buildElements($('#grid'),items);
+
+        $("#grid").gridList({
+            lanes: 6,
+            direction:"horizontal",
+            widthHeightRatio: 200 / 220,
+            heightToFontSizeRatio: 0.15,
+            onChange: function(changedItems) {
+                Grid.flashItems(changedItems);
+            }
+        });
+
+        $(".resize").click(function(e) {
+            e.preventDefault();
+
+            target = $(this).attr("data-target");
+
+            ele = $("#"+target);
+
+            var itemWidth = $(this).data('w');
+
+            var itemHeight = $(this).data('h');
+
+            $(ele).attr("data-w",itemWidth);
+            $(ele).attr("data-h",itemHeight);
+
+            $('#grid').gridList('resizeItem',ele, {
+                w: itemWidth,
+                h: itemHeight
+            });
+        });
+
+        $(".remove").click(function(e) {
+            e.preventDefault();
+            target = $(this).attr("data-target");
+            $("#"+target).remove();
+            Grid.resize(Math.max(1, Grid.currentSize - 1));
+        });
+
+        $(".color").change(function(e) {
+            e.preventDefault();
+            target = $(this).attr("data-target");
+            color = $(this).val();
+
+            $("a","#"+target).css("background-color",color);
+            $("#"+target).attr("data-color",color);
+            Grid.save();
+        });
+
+
+
+    });
+
+    function cbEditForm(text,ele){
+
+        data = $.parseJSON(text)
+
+
+        if(data.code==200){
+
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-check-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-success");
+
+        }else{
+
+            $("#savebutton i").removeClass("fa-save").addClass("fa-times-circle");
+            $("#savebutton").removeClass("btn-primary").addClass("btn-danger");
+
+        }
+
+        return text;
+    }
+
+    $(function(){
+
+        $(document).on("change","#device",function(){
+
+            $("#apicall").html("/device/"+this.value+"/cmd/");
+
+            $("#apicallfull").html(window.location.origin+"/device/"+this.value+"/cmd/");
+
+            $("#btnexfull").attr("href",window.location.origin+"/device/"+this.value+"/cmd/");
+
+            $("#btnex").attr("href",window.location.origin+"/device/"+this.value+"/cmd/");
+        });
+
+    });
+
+</script>
+<style>
+  
+</style>
+<main>
+    <div class="container-fluid">
+        <h1 class="mt-4"><i class="fas fa-calculator"></i> Remote</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow-lg border-0 rounded-lg mt-0">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <form id="remoteform" hx-post="/remotesave"  dep-data-callback="cbEditForm"  class="row mb-3" method="POST" action="/remotesave" >
+                            <div class="col-md-12 mb-3">
+                                <div class="form-group mb-3 mb-md-0">
+                                    <label class="form-label" for="learnlabel">Label</label>
+                                    <input name="label" class="form-control" id="remotelabel" value="{{.Remote.Label}}" type="text" placeholder="ie Theater" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form mb-3 mb-md-0">
+                                    <label class="form-label" for="devicetype">Device</label>
+                                    {{.DeviceSelect}}
+                                </div>
+                            </div>
+                            <input type="hidden" value="{{.Remote.Id}}" name="id" id="remoteid"/>
+                            <div class="mt-4 mb-0 ">
+                                <button id="savebutton" class="mr-2 foat-right btn btn-primary" ><i class="fas fa-save" ></i> Save</button>
+                                <a href="/remotes" class="float-right btn btn-info mr-2" ><i class="fas fa-arrow-left" ></i> Back</a>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center py-3">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card mt-0 p-1">
+                    <div class="form mb-3 mb-md-0">
+                        <div class="alert alert-secondary" role="alert">
+                     <p>Select a button to add to your remote, new buttons are added to the first position in the upper left, drag them to your desired location</p>
+                        </div>
+
+                        <select id="command" class="commands form-control">
+                            <option value="" >-- Select Command to Add --</option>
+                            <option data-icon="" data-color="#343A3F" data-id="" value="placeholder" >Placeholder</option>
+                            <optgroup label="Commands">
+                                {{ range  $k,$v := .Commands }}
+                                <option data-icon="{{$v.Icon}}" data-type="command" data-color="{{$v.Color}}"  data-id="{{$v.Id}}" data-label="{{$v.Label}}" data-id="{{$v.Id}}" value="{{$v.Id}}" >{{$v.Label}} - {{$v.Equipment.Manufacturer}} {{$v.Equipment.Model}}</option>
+                                {{end}}
+                            </optgroup>
+                            <optgroup label="Macros">
+                                {{ range  $k,$v := .Macros }}
+                                <option data-icon="{{$v.Icon}}" data-type="macro" data-color="{{$v.Color}}" data-id="{{$v.Id}}"  data-label="{{$v.Label}}" data-id="{{$v.Id}}" value="{{$v.Id}}" >{{$v.Label}}</option>
+                                {{end}}
+                            </optgroup>
+                        </select>
+
+                </div>
+                <div class="bg-dark card mt-2 p-2" style="height:600px;">
+
+                <div class="grid-container mt-2">
+                    <ul id="grid" class="grid">
+                        <li class="position-highlight">
+                            <div class="inner"></div>
+                        </li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</main>
+<!-- Modal -->
+<div class="modal fade" id="remoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Remote Button</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a class="btn btn-secondary resize" href="#zoom1"  data-w="1" data-h="1">1x1</a>
+                <a class="btn btn-secondary resize" href="#zoom2"  data-w="2" data-h="1">2x1</a>
+                <a class="btn btn-secondary resize" href="#zoom3" data-w="1" data-h="2">1x2</a>
+                <a class="btn btn-secondary resize" href="#zoom4"  data-w="1" data-h="3">1x3</a>
+                <a class="btn btn-secondary resize" href="#zoom5"  data-w="2" data-h="2">2x2</a>
+                <br>
+                <br>
+                <a class="btn btn-danger remove" href="#" ><i class="fas fa-minus-circle"></i> Remove</a>
+
+                <div class="col-md-12 mb-3">
+                    <div class="form mb-3 mb-md-0">
+                        <label class="form-label" >Color</label><br>
+                        <input name="color" class="color" type="color" value="" list="colors" />
+                        <datalist id="colors">
+                            <option>#337ab7</option>
+                            <option>#5cb85c</option>
+                            <option>#5bc0de</option>
+                            <option>#aa320b</option>
+                            <option>#34495e</option>
+                            <option>#2c3e50</option>
+                            <option>#8e44ad</option>
+                            <option>#e67e22</option>
+                            <option>#7f8c8d</option>
+                        </datalist>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+{{ template "footer" }}
