@@ -9,19 +9,13 @@ This api allows access to the Broadlink family of devices for IR/RM control via 
 ![Image of Home](broadlink_home.png?raw=true)
 
 
-
 ## Getting Started
 
 Start the program 
 
 ```
-broadlinkgo --port=8000 --cmdpath=./ 
+broadlinkgo --port=8000 
 ```
-
-Cmdpath is the location where a "commands" folder exists (it will be created if not present) this is where learned codes will be placed.
-
-For linux/systemd systems a service file is included, the default command dir is "/etc/broadlinkgo" and the systemd unit file is looking for the binary in /usr/local/bin
-
 
 The program will look for devices on the network and then once found start the server listening on the port. It will continually scan for devices so if more are added later they will be auto added without needing to re-start
 
@@ -45,6 +39,8 @@ go build -o broadlinkgo
 
 This will package up everything into a binary "broadlinkgo". I've included a few popular build types binaries in releases.
 
+v1 used the rice package to embed html and scripts, that has been replaced with the native embed system in go
+
 
 ## Web Interface
 
@@ -52,7 +48,7 @@ This has received an overhaul in v2. See sections below
 
 ### Devices
 
-Devices are listed and can be edited with descriptive labels. On startup broadlinkgo will searchyour network and mark a check next to devices it's found. Not finding the device is not necessarily an issue depending on our network setup
+Devices are listed and can be edited with descriptive labels. On startup broadlinkgo will search your network and mark a check next to devices it's found. Not finding the device is not necessarily an issue depending on our network setup
 
 ### Commands
 
@@ -136,10 +132,18 @@ Add a 2 second delay in the macro
 ## App Status
 
 ```
-GET /status
+GET /api/status
 ```
 
-Returns json for devices and commands that are configured
+## List Remotes
+
+This is useful for other integrations
+
+```
+GET /api/remotes
+```
+
+Returns json devices, and the butto commands that make up the remote
 
 ## Sending a command to a specific device
 
@@ -173,7 +177,6 @@ POST /remove/vizio_volup
 ## Sending command to a specifc device
 
 Using the mac address listed in devices on the web portal you can send the above commands to a specific device
-
 
 
 # Credit
