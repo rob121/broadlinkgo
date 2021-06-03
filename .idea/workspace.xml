@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9c3c0f68-ccee-4c21-b937-ad1173371d59" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/cmd/api.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/allfa.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/allfa.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/bootstrap.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/brands.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/brands.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/custom-font.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/font-awesome.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/fontawesome.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/fontawesome.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/grid.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/main.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/regular.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/regular.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/solid.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/solid.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/svg-with-js.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/svg-with-js.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/v4-shims.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/css/v4-shims.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/all.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/all.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/bootstrap.bundle.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/brands.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/brands.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/conflict-detection.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/conflict-detection.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/datatables-simple-demo.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/fontawesome.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/fontawesome.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/gridlist.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/jquery.gridlist.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/jquery.gridster.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/jquery.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/main.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/mustache.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/regular.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/regular.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/scripts.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/search.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/solid.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/solid.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/v4-shims.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/v4-shims.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/js/ws.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/command.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/commands.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/device.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/equipment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/equipments.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/footer.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/header.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/learn.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/macro.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/macros.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/remote.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/remotes.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/tmpl/universal.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-brands-400.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-brands-400.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-brands-400.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-brands-400.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-brands-400.woff2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-regular-400.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-regular-400.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-regular-400.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-regular-400.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-regular-400.woff2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-solid-900.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-solid-900.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-solid-900.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-solid-900.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/assets/webfonts/fa-solid-900.woff2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/broadlink.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/command.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/device.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/equipment.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/go.sum" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/http.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/legacy.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/macro.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/remote.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/old/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/broadlink.go" beforeDir="false" afterPath="$PROJECT_DIR$/broadlink.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/broadlink_home.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/broadlink_learn.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-grid.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-grid.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-grid.css.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-grid.css.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-grid.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-grid.min.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-grid.min.css.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-grid.min.css.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-reboot.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-reboot.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-reboot.css.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-reboot.css.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-reboot.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-reboot.min.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap-reboot.min.css.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap-reboot.min.css.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap.css.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap.css.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap.min.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/bootstrap.min.css.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/bootstrap.min.css.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-bootstrap.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-bootstrap.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-bootstrap.less" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-bootstrap.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-bootstrap.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-bootstrap.min.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-bootstrap.scss" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-bootstrap.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-bootstrap.styl" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-bootstrap.styl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-foundation.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-foundation.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-foundation.less" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-foundation.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-foundation.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-foundation.min.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-foundation.scss" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-foundation.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic-foundation.styl" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic-foundation.styl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic.less" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic.min.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic.scss" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/open-iconic.styl" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/open-iconic.styl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/css/sticky-footer-navbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/css/sticky-footer-navbar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/fonts/open-iconic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/fonts/open-iconic.eot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/fonts/open-iconic.otf" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/fonts/open-iconic.otf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/fonts/open-iconic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/fonts/open-iconic.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/fonts/open-iconic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/fonts/open-iconic.ttf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/fonts/open-iconic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/fonts/open-iconic.woff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.bundle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.bundle.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.bundle.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.bundle.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.bundle.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.bundle.min.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.bundle.min.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/bootstrap.min.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/bootstrap.min.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/js/vendor/jquery.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/js/vendor/jquery.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/tmpl/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/tmpl/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/httpassets/tmpl/learn.html" beforeDir="false" afterPath="$PROJECT_DIR$/old/httpassets/tmpl/learn.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/rice-box.go" beforeDir="false" afterPath="$PROJECT_DIR$/old/rice-box.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/device.go" beforeDir="false" afterPath="$PROJECT_DIR$/device.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file:///usr/local/Cellar/go/1.15.5/libexec" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="1pdDQR4BLlTgtXDZwLn0Qf1rZYs" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
+    <property name="go.vendoring.notification.had.been.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cmd" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/device.go</url>
+          <line>297</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/http.go</url>
+          <line>766</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/http.go</url>
+          <line>50</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
