@@ -48,7 +48,7 @@ This has received an overhaul in v2. See sections below
 
 ### Devices
 
-Devices are listed and can be edited with descriptive labels. On startup broadlinkgo will search your network and mark a check next to devices it's found. Not finding the device is not necessarily an issue depending on our network setup
+Devices are listed and can be edited with descriptive labels. On startup broadlinkgo will search your network and mark a check next to devices it's found. Not finding the device is not necessarily an issue depending on your network setup
 
 ### Commands
 
@@ -65,12 +65,6 @@ New in v2 equipment is a helpful description of your target devices, tv's, stere
 ## Remotes
 
 New in v2 List remotes and associate buttons, also a remote view to be used on mobile.
-
-```
-broadlinkgo --port=8000 --cmdpath=./ --mode=manual
-```
-
-A button will appear on the interface allowing you to add a device manually skipping the discovery step. Special care should be taken to make sure you pick the correct device type to connect to when using this mode.
 
 ### Learning
 
@@ -143,7 +137,7 @@ This is useful for other integrations
 GET /api/remotes
 ```
 
-Returns json devices, and the butto commands that make up the remote
+Returns json devices, and the button commands that make up the remote
 
 ## Sending a command to a specific device
 

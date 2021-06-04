@@ -7,6 +7,7 @@ import(
 	"path/filepath"
     "log"
 	"regexp"
+	"sort"
 	"strings"
 	"hash/adler32"
 	"github.com/speps/go-hashids/v2"
@@ -20,6 +21,12 @@ type Command struct{
 	Color string
 	Path string //partial path
 }
+
+type Commands []Command
+
+func (c Commands) Len() int           { return len(c) }
+func (c Commands) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+func (c Commands) Less(i, j int) bool { return c[i].Label < c[j].Label }
 
 func addCommand(label string,icon string,equipment Equipment,color string) (Command){
 
@@ -52,15 +59,17 @@ func getCommand(id string) (Command,error){
 
 }
 
-func getCommands() ([]Command){
+func getCommands() (Commands){
 
-	var Commands []Command
+	var Commands Commands
 
 	db.All(&Commands)
 
 	c := Command{Id:"delay",Label: "Delay",Icon: "fa-stopwatch",Equipment: Equipment{Id: "system",Label:"System", Manufacturer:"System", Model:"Builtin"},Color: ""}
 
 	Commands = append(Commands,c)
+
+	sort.Sort(Commands)
 
 	return Commands
 }
@@ -137,6 +146,8 @@ func getCommandsByPath() []string{
 
 
 }
+
+
 
 func (c Command) ToCmd() (string){
 

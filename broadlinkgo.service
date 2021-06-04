@@ -3,6 +3,7 @@ Description=Broadlink device server
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
+User=root
 Type=simple 
 PIDFile=/run/broadlink.pid
 ExecStart=/usr/local/bin/broadlinkgo           

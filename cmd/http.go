@@ -13,6 +13,7 @@ import(
 	"io/ioutil"
 	"path/filepath"
 	"os"
+	"sort"
 )
 //go:embed assets/*
 var assetsfs embed.FS
@@ -661,7 +662,7 @@ func httpLearnHandler(w http.ResponseWriter, r *http.Request) {
 	ke := getEquipments()
 
 
-	log.Printf("Id lookup %s\n",id)
+	//log.Printf("Id lookup %s\n",id)
 
 	for _, v := range ke {
 
@@ -1231,60 +1232,34 @@ func respond(w http.ResponseWriter, code int, message string, payload interface{
 
 func getIconSelect() (string){
 
+	p := make(PairList, len(icons))
+
+	i := 0
+
+	for k, v := range icons {
+		p[i] = Pair{k, v}
+		i++
+	}
+
+
+	sort.Sort(p)
+
 	icon_sel:=`
 
 <details class="icon_sel form-control">
 <summary>Icon</summary>
-<p>
-  <a href="#" ><i class="fas fa-play"></i> Play</a>
-  <a href="#" ><i class="fas fa-pause"></i> Pause</a>
-  <a href="#" ><i class="fas fa-stop"></i> Stop</a>
-  <a href="#" ><i class="fas fa-circle"></i> Record</a>
-  <a href="#" ><i class="fas fa-info-circle"></i> Info</a>
-  <a href="#" ><i class="fas fa-check-circle"></i> Check</a>
-  <a href="#" ><i class="fas fa-power-off"></i> Power</a>
-  <a href="#" ><i class="fas fa-times-circle"></i> Exit</a>
-  <a href="#" ><i class="fas fa-bars"></i> Menu</a>
-  <a href="#" ><i class="fas fa-undo-alt"></i> Return</a>
-  <a href="#" ><i class="fas fa-forward"></i> Forward</a>
-  <a href="#" ><i class="fas fa-fast-forward"></i> Fast Forward</a>
-  <a href="#" ><i class="fas fa-fast-backward"></i> Backward</a>  
-  <a href="#" ><i class="fas fa-fast-backward"></i> Fast Backward</a>
-  <a href="#" ><i class="fas fa-volume-up"></i> Volume Up</a>
-  <a href="#" ><i class="fas fa-volume-down"></i> Volume Down</a>
-  <a href="#" ><i class="fas fa-volume-mute"></i> Mute</a>
-  <a href="#" ><i class="fas fa-plus"></i> Plus</a>
-  <a href="#" ><i class="fas fa-minus"></i> Minus</a>
-  <a href="#" ><i class="fas fa-plus-square"></i> Plus</a>
-  <a href="#" ><i class="fas fa-minus-square"></i> Minus</a>
-  <a href="#" ><i class="fas fa-num-1"></i> 1 Button</a>
-  <a href="#" ><i class="fas fa-num-2"></i> 2 Button</a>
-  <a href="#" ><i class="fas fa-num-3"></i> 3 Button</a>
-  <a href="#" ><i class="fas fa-num-4"></i> 4 Button</a>
-  <a href="#" ><i class="fas fa-num-5"></i> 5 Button</a>
-  <a href="#" ><i class="fas fa-num-6"></i> 6 Button</a>
-  <a href="#" ><i class="fas fa-num-7"></i> 7 Button</a>
-  <a href="#" ><i class="fas fa-num-8"></i> 8 Button</a>
-  <a href="#" ><i class="fas fa-num-9"></i> 9 Button</a>
-  <a href="#" ><i class="fas fa-num-0"></i> 0 Button</a>
-  <a href="#" ><i class="fas fa-remote-menu"></i> Menu</a>
-  <a href="#" ><i class="fas fa-remote-exit"></i> Exit</a>
-  <a href="#" ><i class="fas fa-tv"></i> TV</a>
-  <a href="#" ><i class="fas fa-laptop"></i> Computer</a>
-  <a href="#" ><i class="fas fa-server"></i> Component</a>
-  <a href="#" ><i class="fas fa-hdd"></i> Device</a>
-  <a href="#" ><i class="fas fa-tools"></i> Tools</a>
-  <a href="#" ><i class="fas fa-caret-up"></i> Up</a>
-  <a href="#" ><i class="fas fa-caret-down"></i> Down</a>
-  <a href="#" ><i class="fas fa-caret-left"></i> Left</a>
-  <a href="#" ><i class="fas fa-caret-right"></i> Right</a>
-  <a href="#" ><i class="fas fa-music"></i> Music</a>
-  <a href="#" ><i class="fas fa-film"></i> Movie</a>
-  <a href="#" ><i class="fas fa-youtube"></i> Youtube</a>
+<p>`;
 
+  for _,k:= range p{
+
+  	icon_sel+=fmt.Sprintf(`<a href="#" ><i class="fas %s"></i> %s</a>`,k.Key,k.Value)
+
+  }
+
+  	icon_sel +=`
 </p>
-</details>
-`
+</details>`;
+
 
 	return icon_sel
 
