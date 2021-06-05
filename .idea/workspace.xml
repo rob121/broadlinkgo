@@ -6,12 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="9c3c0f68-ccee-4c21-b937-ad1173371d59" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/assets/tmpl/remote.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/assets/tmpl/remote.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/broadlink.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/broadlink.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/assets/css/allfa.css" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/assets/css/allfa.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/assets/css/custom-font.css" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/assets/css/custom-font.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/assets/css/font-awesome.min.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/assets/tmpl/command.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/assets/tmpl/command.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/assets/tmpl/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/assets/tmpl/header.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/command.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/command.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/http.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/http.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/icons.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/icons.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +51,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="full.screen.before.presentation.mode" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
@@ -89,13 +92,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/http.go</url>
-          <line>767</line>
+          <line>768</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/http.go</url>
-          <line>51</line>
+          <line>52</line>
           <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/icons.go</url>
+          <line>68</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/http.go</url>
+          <line>36</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

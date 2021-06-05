@@ -14,6 +14,7 @@ import(
 	"path/filepath"
 	"os"
 	"sort"
+	"strings"
 )
 //go:embed assets/*
 var assetsfs embed.FS
@@ -876,16 +877,19 @@ func httpCommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl := loadTmpl("assets/tmpl/commands.html")
 
+	vars:=mux.Vars(r)
+
+	format:=vars["format"]
+
 	data := PageData{}
 
-	data["Title"] = "Home"
+	data["Title"] = "Commands"
 
-	if(r.Header.Get("X-Requested-With") == "xmlhttprequest" || r.Header.Get("Hx-Request")=="true") {
+	if(format==".json") {
 		data["Commands"] = getCommands()
 		respond(noCache(w),200,"OK",data)
 		return
 	}
-
 
 	tmpl.Execute(noCache(w), data)
 
@@ -1252,7 +1256,16 @@ func getIconSelect() (string){
 
   for _,k:= range p{
 
-  	icon_sel+=fmt.Sprintf(`<a href="#" ><i class="fas %s"></i> %s</a>`,k.Key,k.Value)
+  	parts := strings.Split(k.Key," ")
+
+  	if(len(parts)<2){
+
+  		k.Key = fmt.Sprintf("fas %s",k.Key)
+
+	}
+
+
+  	icon_sel+=fmt.Sprintf(`<a href="#" ><i class="%s"></i> %s</a>`,k.Key,k.Value)
 
   }
 
@@ -1342,7 +1355,7 @@ func noCache(w http.ResponseWriter) (http.ResponseWriter){
 
 	var noCacheHeaders = map[string]string{
 		"Expires":         epoch,
-		"Vary":            "Accept",
+		"Vary":            "accept",
 		"Cache-Control":   "no-cache, private, max-age=0",
 		"Pragma":          "no-cache",
 		"X-Accel-Expires": "0",

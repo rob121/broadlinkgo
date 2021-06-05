@@ -270,6 +270,11 @@ func (c *Command) Remove() (error){
 
 func (c *Command) Save() (error){
 
+	if(c.Id=="delay"){
+
+		return nil
+	}
+
 	c.GenerateId()
 
 	return db.Save(c)

@@ -19,13 +19,14 @@ func init() {
 
 	icons = map[string]string{
 		"fa-adjust": "Adjust",
-		"fa-apple": "Apple",
 		"fa-bolt": "Power Alt",
 		"fa-play": "Play",
 		"fa-border-all": "Split Screen",
 		"fa-square": "Single Screen",
 		"fa-pause": "Pause",
 		"fa-stop": "Stop",
+		"fa-gamepad": "Gamepad",
+		"fa-compact-disc": "Dvd",
 		"fa-circle": "Record",
 		"fa-info-circle": "Info",
 		"fa-check-circle": "Check",
@@ -42,6 +43,7 @@ func init() {
 		"fa-volume-mute": "Mute",
 		"fa-plus": "Plus",
 		"fa-minus": "Minus",
+		"fa-apple-alt": "Apple TV",
 		"fa-plus-square": "Plus",
 		"fa-minus-square": "Minus",
 		"fa-num-1": "1 Button",
@@ -67,6 +69,7 @@ func init() {
 		"fa-caret-right": "Right",
 		"fa-music": "Music",
 		"fa-film": "Movie",
+		"fa-band-aid": "Receiver",
 		"fab fa-youtube": "Youtube",
 	}
 

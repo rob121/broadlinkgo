@@ -319,7 +319,8 @@ readers do not read off random characters that represent icons */
   content: "\f371"; }
 
 .fa-apple:before {
-  content: "\f179"; }
+  content: "\f179"; 
+}
 
 .fa-apple-alt:before {
   content: "\f5d1"; }
